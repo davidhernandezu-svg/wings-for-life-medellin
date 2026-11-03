@@ -28,18 +28,609 @@
             }
         }
     </script>
-    <!-- Lucide Icons -->
+    <!-- Lucide Icons con respaldo -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; }
         .glow-orange { box-shadow: 0 0 25px rgba(249, 115, 22, 0.3); }
         .glow-cyan { box-shadow: 0 0 25px rgba(6, 182, 212, 0.3); }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
 
-    <!-- Modal de Alerta / Mensajes personalizados -->
+    <!-- Modal de Alerta -->
     <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+            <h3 id="modal-title" class="text-xl font-bold mb-2 text-white">Aviso</h3>
+            <p id="modal-message" class="text-slate-300 text-sm mb-6 leading-relaxed">Mensaje de notificación.</p>
+            <div class="flex justify-end">
+                <button onclick="closeModal()" class="px-5 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-semibold rounded-xl transition duration-200">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Principal -->
+    <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-[96rem] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-gradient-to-tr from-orange-600 to-amber-500 p-2.5 rounded-2xl glow-orange text-white font-bold">
+                    WFL
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-white">
+                        WINGS FOR LIFE HUB
+                    </h1>
+                    <p class="text-xs text-slate-400 font-medium">Corre por los que no pueden • Club Mariana Carmona</p>
+                </div>
+            </div>
+
+            <div class="flex items-center bg-slate-800/90 p-1.5 rounded-2xl border border-slate-700/60 shadow-inner">
+                <button onclick="switchRole('coach')" id="btn-role-coach" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center space-x-2 bg-orange-600 text-white shadow-md">
+                    <span>Entrenador</span>
+                </button>
+                <button onclick="switchRole('athlete')" id="btn-role-athlete" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center space-x-2 text-slate-400 hover:text-white">
+                    <span>Atleta</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="flex-grow max-w-[96rem] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- VISTA ENTRENADOR -->
+        <div id="view-coach" class="space-y-8">
+            <div class="bg-gradient-to-r from-slate-900 via-slate-900 to-orange-950 border border-orange-500/20 rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-xl">
+                <div class="max-w-4xl">
+                    <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-orange-500/10 text-orange-400 border border-orange-500/20 mb-4">
+                        Panel de Control Maestro
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-3">
+                        Gestiona Claves y Planes Personalizados
+                    </h2>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        Crea códigos únicos de entrenamiento para compartir con tus atletas. Diseña estrategias basadas en ritmos específicos para superar la persecución del <span class="text-orange-500 font-semibold">Catcher Car</span>.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+                <!-- Columna Izquierda: Generador de Claves -->
+                <div class="xl:col-span-4 space-y-6">
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+                        <h3 class="text-lg font-bold text-white mb-4">Crear Clave de Atleta</h3>
+                        <form id="form-create-key" onsubmit="handleCreateKey(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Nombre del Atleta</label>
+                                <input type="text" id="athlete-name" required placeholder="Ej. Carlos Mendoza" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-orange-500 transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Clave de Acceso (Código)</label>
+                                <div class="flex space-x-2">
+                                    <input type="text" id="athlete-code" required placeholder="Ej. WINGS2026-CM" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-orange-500 transition uppercase font-mono">
+                                    <button type="button" onclick="generateRandomCode()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 rounded-xl border border-slate-700 transition">🔄</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Peso Actual (kg)</label>
+                                <input type="number" id="athlete-weight" required min="35" max="150" value="70" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-orange-500 transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Ritmo Actual (min/km)</label>
+                                <input type="text" id="athlete-pace" required placeholder="Ej. 5:30" value="5:30" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-orange-500 transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Nivel de Experiencia</label>
+                                <select id="athlete-level" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-orange-500 transition">
+                                    <option value="Principiante">Principiante (Corre esporádicamente)</option>
+                                    <option value="Intermedio" selected>Intermedio (Corre regularmente)</option>
+                                    <option value="Avanzado">Avanzado (Alto kilometraje semanal)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-semibold py-3 rounded-xl transition duration-200 shadow-lg shadow-orange-600/20">
+                                Emitir Clave y Plan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Lista de Atletas y Simulador -->
+                <div class="xl:col-span-8 space-y-6">
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-bold text-white">Atletas y Claves Emitidas</h3>
+                            <span id="athletes-count" class="text-xs px-2.5 py-1 bg-slate-800 text-slate-300 rounded-full font-semibold">1 Atletas</span>
+                        </div>
+                        <div id="coach-athletes-list" class="space-y-4"></div>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+                        <h3 class="text-lg font-bold text-white mb-4">Calculadora de Catcher Car & Estrategia Global</h3>
+                        <p class="text-slate-400 text-xs mb-4">Ingresa un ritmo de prueba para calcular al instante el tiempo y distancia de captura oficial.</p>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Ritmo de Prueba (min/km)</label>
+                                <input type="text" id="sim-pace-input" value="5:30" oninput="runQuickSimulator()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500 transition">
+                            </div>
+                            <div class="flex items-end">
+                                <div class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 flex justify-between items-center">
+                                    <span class="text-xs text-slate-400 font-medium">Meta Estimada:</span>
+                                    <span id="sim-result-km" class="text-cyan-400 font-extrabold text-base">17.15 km</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="sim-breakdown" class="text-xs text-slate-400 bg-slate-950/60 p-3 rounded-xl border border-slate-800/80">
+                            Serás alcanzado a los <span class="text-white font-semibold">17.15 km</span> en un tiempo total de carrera de <span class="text-white font-semibold">1h 34m</span>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA ATLETA -->
+        <div id="view-athlete" class="space-y-8 hidden">
+            <div id="athlete-login-card" class="max-w-xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
+                <div class="text-center space-y-3">
+                    <h2 class="text-2xl font-bold text-white">Acceso o Inscripción de Atleta</h2>
+                    <p class="text-slate-400 text-sm">Ingresa tu clave de entrenador o regístrate en el club oficial para unirte.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-800">
+                    <div class="space-y-4">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-orange-500">¿Ya tienes clave?</h3>
+                        <form onsubmit="handleAthleteLogin(event)" class="space-y-3">
+                            <input type="text" id="login-code-input" required placeholder="Ej. WINGS2026-CM" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white uppercase font-mono text-center tracking-wider focus:outline-none focus:border-orange-500 transition">
+                            <button type="submit" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-semibold py-2.5 rounded-xl transition text-sm shadow-md">
+                                Cargar Mi Plan
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="space-y-4 border-t md:border-t-0 md:border-l border-slate-800 pt-4 md:pt-0 md:pl-6 flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-cyan-400">Únete al Club</h3>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Es obligatorio registrarte en el grupo de <strong class="text-white">Mariana Carmona</strong> para participar oficialmente.
+                            </p>
+                        </div>
+                        <button onclick="openClubModal()" class="w-full bg-gradient-to-r from-cyan-600 to-orange-600 hover:from-cyan-500 hover:to-orange-500 text-white font-bold py-2.5 rounded-xl transition text-sm shadow-md">
+                            Inscribirme al Club
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-center text-xs text-slate-500 pt-3 border-t border-slate-800">
+                    ¿Quieres probar la plataforma? <button onclick="loadDemoAthlete()" class="text-orange-500 underline font-semibold hover:text-orange-400">Cargar Demo Atleta</button>
+                </div>
+            </div>
+
+            <!-- Dashboard Atleta -->
+            <div id="athlete-dashboard" class="space-y-8 hidden">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Atleta</span>
+                            <h3 id="dash-athlete-title" class="text-lg font-bold text-white">Atleta</h3>
+                            <span id="dash-athlete-level" class="text-xs text-orange-500 font-semibold">Nivel</span>
+                        </div>
+                        <button onclick="logoutAthlete()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2 rounded-xl border border-slate-700 transition text-xs">Salir</button>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Tu Ritmo Base</span>
+                        <div id="metric-pace" class="text-xl font-black text-white">5:30 <span class="text-xs font-normal text-slate-400">min/km</span></div>
+                        <span class="text-xs text-slate-500">Peso: <strong id="metric-weight" class="text-slate-300">70 kg</strong></span>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Meta Catcher Car</span>
+                        <div id="metric-target-km" class="text-xl font-black text-cyan-400">16.32 km</div>
+                        <span class="text-xs text-slate-500">Proyección estimada</span>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Entrenamientos</span>
+                        <div id="metric-completed-workouts" class="text-xl font-black text-emerald-400">0 / 12</div>
+                        <span class="text-xs text-slate-500">Completados</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-4">
+                    <button onclick="switchAthleteTab('plan')" id="tab-btn-plan" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition bg-orange-600 text-white shadow-md">Plan de 4 Semanas</button>
+                    <button onclick="switchAthleteTab('simulator')" id="tab-btn-simulator" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition text-slate-400 hover:text-white bg-slate-900 border border-slate-800">Simulador Catcher Car Pro</button>
+                    <button onclick="switchAthleteTab('strategy')" id="tab-btn-strategy" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition text-slate-400 hover:text-white bg-slate-900 border border-slate-800">Estrategia & Nutrición</button>
+                    <button onclick="switchAthleteTab('advanced')" id="tab-btn-advanced" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition text-cyan-400 hover:text-cyan-300 bg-cyan-950/30 border border-cyan-500/30">Plan Avanzado Club</button>
+                </div>
+
+                <div id="athlete-tab-plan" class="space-y-6">
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-white">Tu Plan de Entrenamiento Personalizado</h3>
+                                <p class="text-slate-400 text-xs mt-1">Generado automáticamente según tu capacidad, peso y ritmo.</p>
+                            </div>
+                            <div class="flex space-x-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800">
+                                <button onclick="selectWeek(1)" id="week-btn-1" class="px-4 py-1.5 rounded-xl text-xs font-bold bg-orange-600 text-white transition">Semana 1</button>
+                                <button onclick="selectWeek(2)" id="week-btn-2" class="px-4 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition">Semana 2</button>
+                                <button onclick="selectWeek(3)" id="week-btn-3" class="px-4 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition">Semana 3</button>
+                                <button onclick="selectWeek(4)" id="week-btn-4" class="px-4 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition">Semana 4 (Pico)</button>
+                            </div>
+                        </div>
+                        <div id="workout-sessions-list" class="space-y-4"></div>
+                    </div>
+                </div>
+
+                <div id="athlete-tab-simulator" class="space-y-6 hidden">
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
+                        <h3 class="text-xl font-bold text-white mb-2">Simulador Oficial Catcher Car (Wings for Life)</h3>
+                        <p class="text-slate-400 text-sm mb-6">El auto meta arranca 30 minutos después de la salida a <span class="text-white font-semibold">15 km/h</span> y acelera progresivamente.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800">
+                                <span class="block text-xs font-semibold text-slate-400 uppercase mb-2">Tu Ritmo Constante</span>
+                                <input type="text" id="pro-sim-pace" value="5:30" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-lg font-bold text-white focus:outline-none focus:border-cyan-500">
+                            </div>
+                            <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
+                                <span class="block text-xs font-semibold text-slate-400 uppercase mb-1">Distancia de Captura</span>
+                                <div class="text-3xl font-black text-cyan-400" id="pro-sim-km">16.32 km</div>
+                                <span class="text-xs text-slate-500" id="pro-sim-time">A los 1h 29m de carrera</span>
+                            </div>
+                            <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col justify-center">
+                                <button onclick="calculateProSimulator()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-3 rounded-xl transition">Actualizar Simulación</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="athlete-tab-strategy" class="space-y-6 hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+                            <h3 class="text-lg font-bold text-white">Estrategia de Ritmo Wings for Life</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed">Inicia un 5-10% más conservador durante los primeros 45 minutos para evitar picos prematuros de lactato.</p>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+                            <h3 class="text-lg font-bold text-white">Hidratación y Nutrición</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed">Consume 30-45g de carbohidratos por hora a partir del kilómetro 10 en cada estación.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="athlete-tab-advanced" class="space-y-6 hidden">
+                    <div class="bg-slate-900 border border-cyan-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl">
+                        <h3 class="text-2xl font-bold text-white tracking-tight">Plan de Entrenamiento Personalizado Avanzado</h3>
+                        <p class="text-slate-300 text-sm sm:text-base leading-relaxed mt-2">Obtén un programa ultra-personalizado con precio preferencial exclusivo para miembros del Club Mariana Carmona.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Registro Club -->
+    <div id="club-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden">
+        <div class="bg-slate-900 border border-cyan-500/30 rounded-3xl p-6 sm:p-8 max-w-lg w-full mx-4 shadow-2xl relative">
+            <div class="flex justify-between items-start mb-6">
+                <h3 class="text-2xl font-bold text-white">Club Wings for Life • Mariana Carmona</h3>
+                <button onclick="closeClubModal()" class="text-slate-400 hover:text-white p-2">✕</button>
+            </div>
+            <form onsubmit="handleClubRegistration(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Nombre y Apellido</label>
+                    <input type="text" id="club-reg-name" required placeholder="Ej. Camila Torres" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Correo Electrónico</label>
+                    <input type="email" id="club-reg-email" required placeholder="camila@example.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">WhatsApp de Contacto</label>
+                    <input type="tel" id="club-reg-phone" required placeholder="+57 300 9876543" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Nivel</label>
+                    <select id="club-reg-level" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white">
+                        <option value="Principiante">Principiante</option>
+                        <option value="Intermedio">Intermedio</option>
+                        <option value="Avanzado">Avanzado</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-cyan-600 to-orange-600 text-white font-bold py-3 rounded-xl">Completar Inscripción</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let appState = {
+            role: 'coach',
+            athletes: [
+                {
+                    id: '1',
+                    name: 'Mateo Fernández',
+                    code: 'WINGS2026-MF',
+                    weight: 68,
+                    pace: '5:00',
+                    level: 'Avanzado',
+                    workouts: [
+                        { week: 1, day: 'Lunes', title: 'Rodaje Suave Aeróbico', desc: '8 km a ritmo conversacional (5:45 min/km)', completed: true },
+                        { week: 1, day: 'Miércoles', title: 'Intervalos de Velocidad', desc: '6x 800m a ritmo 4:30 min/km con 2 min trote suave', completed: false },
+                        { week: 2, day: 'Lunes', title: 'Recuperación Activa', desc: '6 km muy suave o natación', completed: false },
+                        { week: 3, day: 'Lunes', title: 'Rodaje Regenerativo', desc: '7 km suave', completed: false }
+                    ]
+                }
+            ],
+            currentAthlete: null,
+            selectedWeek: 1
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCoachView();
+            runQuickSimulator();
+            generateRandomCode();
+        });
+
+        function showModal(title, message, isError = false) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = message;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+        function switchRole(role) {
+            appState.role = role;
+            const btnCoach = document.getElementById('btn-role-coach');
+            const btnAthlete = document.getElementById('btn-role-athlete');
+            const viewCoach = document.getElementById('view-coach');
+            const viewAthlete = document.getElementById('view-athlete');
+
+            if (role === 'coach') {
+                btnCoach.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center space-x-2 bg-orange-600 text-white shadow-md';
+                btnAthlete.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center space-x-2 text-slate-400 hover:text-white';
+                viewCoach.classList.remove('hidden');
+                viewAthlete.classList.add('hidden');
+                renderCoachView();
+            } else {
+                btnAthlete.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center space-x-2 bg-orange-600 text-white shadow-md';
+                btnCoach.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center space-x-2 text-slate-400 hover:text-white';
+                viewAthlete.classList.remove('hidden');
+                viewCoach.classList.add('hidden');
+                
+                if (appState.currentAthlete) {
+                    renderAthleteDashboard();
+                } else {
+                    document.getElementById('athlete-login-card').classList.remove('hidden');
+                    document.getElementById('athlete-dashboard').classList.add('hidden');
+                }
+            }
+        }
+
+        function generateRandomCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = 'WINGS2026-';
+            for (let i = 0; i < 4; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById('athlete-code').value = code;
+        }
+
+        function paceToSeconds(paceStr) {
+            const parts = paceStr.trim().split(':');
+            if (parts.length !== 2) return 330;
+            const mins = parseInt(parts[0]) || 5;
+            const secs = parseInt(parts[1]) || 30;
+            return mins * 60 + secs;
+        }
+
+        function calculateCatcherCarDistance(paceStr) {
+            const runnerSecPerKm = paceToSeconds(paceStr);
+            let timeElapsedSeconds = 1800;
+            let distance = 0;
+            while (true) {
+                let hoursFromStart = timeElapsedSeconds / 3600;
+                let carSpeedKmH = 15;
+                if (hoursFromStart >= 4) carSpeedKmH = 20;
+                else if (hoursFromStart >= 3) carSpeedKmH = 18;
+                else if (hoursFromStart >= 2) carSpeedKmH = 17;
+                else if (hoursFromStart >= 1) carSpeedKmH = 16;
+
+                let runnerCurrentKm = timeElapsedSeconds / runnerSecPerKm;
+                let carCurrentKm = (carSpeedKmH / 3600) * (timeElapsedSeconds - 1800);
+
+                if (carCurrentKm >= runnerCurrentKm) {
+                    distance = runnerCurrentKm;
+                    break;
+                }
+                timeElapsedSeconds += 5;
+                if (timeElapsedSeconds > 25000) {
+                    distance = timeElapsedSeconds / runnerSecPerKm;
+                    break;
+                }
+            }
+            let totalMinutes = Math.round(timeElapsedSeconds / 60);
+            let hours = Math.floor(totalMinutes / 60);
+            let minutes = totalMinutes % 60;
+            return { distance: distance.toFixed(2), timeFormatted: `${hours}h ${minutes}m` };
+        }
+
+        function runQuickSimulator() {
+            const pace = document.getElementById('sim-pace-input').value;
+            const res = calculateCatcherCarDistance(pace);
+            document.getElementById('sim-result-km').innerText = res.distance + ' km';
+            document.getElementById('sim-breakdown').innerHTML = `Serás alcanzado a los <span class="text-white font-semibold">${res.distance} km</span> en un tiempo total de carrera de <span class="text-white font-semibold">${res.timeFormatted}</span>.`;
+        }
+
+        function generateDynamicPlan(level, pace) {
+            return [
+                { week: 1, day: 'Lunes', title: 'Rodaje Aeróbico Suave', desc: `6 a 8 km a ritmo (${pace})`, completed: false },
+                { week: 1, day: 'Miércoles', title: 'Intervalos', desc: '5x 800m fuerte', completed: false },
+                { week: 2, day: 'Lunes', title: 'Recuperación Activa', desc: '5 km suave', completed: false },
+                { week: 3, day: 'Lunes', title: 'Tirada Larga', desc: '12 km constantes', completed: false }
+            ];
+        }
+
+        function handleCreateKey(event) {
+            event.preventDefault();
+            const name = document.getElementById('athlete-name').value;
+            const code = document.getElementById('athlete-code').value.toUpperCase();
+            const weight = parseFloat(document.getElementById('athlete-weight').value);
+            const pace = document.getElementById('athlete-pace').value;
+            const level = document.getElementById('athlete-level').value;
+
+            const newAthlete = {
+                id: Date.now().toString(),
+                name,
+                code,
+                weight,
+                pace,
+                level,
+                workouts: generateDynamicPlan(level, pace)
+            };
+
+            appState.athletes.push(newAthlete);
+            renderCoachView();
+            showModal('Clave Creada', `Se generó el plan para ${name} con la clave ${code}.`);
+            document.getElementById('form-create-key').reset();
+            generateRandomCode();
+        }
+
+        function renderCoachView() {
+            const listEl = document.getElementById('coach-athletes-list');
+            document.getElementById('athletes-count').innerText = `${appState.athletes.length} Atletas`;
+
+            let html = '';
+            appState.athletes.forEach(athlete => {
+                const sim = calculateCatcherCarDistance(athlete.pace);
+                html += `
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h4 class="text-base font-bold text-white">${athlete.name} <span class="text-xs text-orange-400 font-mono">${athlete.code}</span></h4>
+                            <div class="flex gap-3 text-xs text-slate-400 mt-1">
+                                <span>Peso: ${athlete.weight} kg</span>
+                                <span>Ritmo: ${athlete.pace} min/km</span>
+                                <span>Meta CC: <strong class="text-cyan-400">${sim.distance} km</strong></span>
+                            </div>
+                        </div>
+                        <button onclick="loginAsAthleteByCode('${athlete.code}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-3.5 py-2 rounded-xl border border-slate-700">Ver Vista Atleta</button>
+                    </div>
+                `;
+            });
+            listEl.innerHTML = html;
+        }
+
+        function handleAthleteLogin(event) {
+            event.preventDefault();
+            const code = document.getElementById('login-code-input').value.trim().toUpperCase();
+            const athlete = appState.athletes.find(a => a.code === code);
+            if (!athlete) {
+                showModal('Clave Incorrecta', 'No se encontró ningún atleta con esta clave.', true);
+                return;
+            }
+            appState.currentAthlete = athlete;
+            renderAthleteDashboard();
+        }
+
+        function loginAsAthleteByCode(code) {
+            const athlete = appState.athletes.find(a => a.code === code);
+            if (athlete) {
+                appState.currentAthlete = athlete;
+                switchRole('athlete');
+            }
+        }
+
+        function loadDemoAthlete() {
+            appState.currentAthlete = appState.athletes[0];
+            renderAthleteDashboard();
+        }
+
+        function logoutAthlete() {
+            appState.currentAthlete = null;
+            document.getElementById('athlete-login-card').classList.remove('hidden');
+            document.getElementById('athlete-dashboard').classList.add('hidden');
+        }
+
+        function renderAthleteDashboard() {
+            const athlete = appState.currentAthlete;
+            document.getElementById('athlete-login-card').classList.add('hidden');
+            document.getElementById('athlete-dashboard').classList.remove('hidden');
+            document.getElementById('dash-athlete-title').innerText = `¡Hola, ${athlete.name}!`;
+            document.getElementById('dash-athlete-level').innerText = `Nivel ${athlete.level}`;
+            document.getElementById('metric-weight').innerText = `${athlete.weight} kg`;
+            document.getElementById('metric-pace').innerHTML = `${athlete.pace} <span class="text-xs font-normal text-slate-400">min/km</span>`;
+            
+            const sim = calculateCatcherCarDistance(athlete.pace);
+            document.getElementById('metric-target-km').innerText = `${sim.distance} km`;
+            renderWorkoutsList();
+        }
+
+        function switchAthleteTab(tabName) {
+            ['plan', 'simulator', 'strategy', 'advanced'].forEach(t => {
+                document.getElementById(`athlete-tab-${t}`).classList.add('hidden');
+            });
+            document.getElementById(`athlete-tab-${tabName}`).classList.remove('hidden');
+        }
+
+        function openClubModal() { document.getElementById('club-modal').classList.remove('hidden'); }
+        function closeClubModal() { document.getElementById('club-modal').classList.add('hidden'); }
+
+        function handleClubRegistration(event) {
+            event.preventDefault();
+            const name = document.getElementById('club-reg-name').value;
+            const randomCode = 'MC-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+            const newAthlete = {
+                id: Date.now().toString(),
+                name,
+                code: randomCode,
+                weight: 70,
+                pace: '5:30',
+                level: 'Intermedio',
+                workouts: generateDynamicPlan('Intermedio', '5:30')
+            };
+            appState.athletes.push(newAthlete);
+            appState.currentAthlete = newAthlete;
+            closeClubModal();
+            renderCoachView();
+            switchRole('athlete');
+            showModal('¡Bienvenido!', `Inscripción exitosa. Tu clave personal es: ${randomCode}`);
+        }
+
+        function renderWorkoutsList() {
+            const athlete = appState.currentAthlete;
+            const listEl = document.getElementById('workout-sessions-list');
+            let html = '';
+            athlete.workouts.forEach((w, index) => {
+                html += `
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 flex justify-between items-center">
+                        <div>
+                            <h4 class="text-base font-bold text-white">${w.title} (${w.day})</h4>
+                            <p class="text-slate-300 text-sm mt-1">${w.desc}</p>
+                        </div>
+                        <button onclick="toggleWorkoutCompletion(${index})" class="px-4 py-2 rounded-xl text-xs font-semibold ${w.completed ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-300'}">
+                            ${w.completed ? 'Completado' : 'Marcar'}
+                        </button>
+                    </div>
+                `;
+            });
+            listEl.innerHTML = html;
+        }
+
+        function toggleWorkoutCompletion(index) {
+            appState.currentAthlete.workouts[index].completed = !appState.currentAthlete.workouts[index].completed;
+            renderWorkoutsList();
+            const completedCount = appState.currentAthlete.workouts.filter(w => w.completed).length;
+            document.getElementById('metric-completed-workouts').innerText = `${completedCount} / ${appState.currentAthlete.workouts.length}`;
+        }
+
+        function calculateProSimulator() {
+            const pace = document.getElementById('pro-sim-pace').value;
+            const res = calculateCatcherCarDistance(pace);
+            document.getElementById('pro-sim-km').innerText = res.distance + ' km';
+            document.getElementById('pro-sim-time').innerText = `A los ${res.timeFormatted} de carrera`;
+        }
+    </script>
+</body>
+</html>
