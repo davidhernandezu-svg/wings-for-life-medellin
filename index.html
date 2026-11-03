@@ -29,9 +29,9 @@
         .glow-orange { box-shadow: 0 0 25px rgba(249, 115, 22, 0.3); }
         .lane { position: relative; height: 34px; border-top: 2px dashed rgba(255,255,255,.15); border-bottom: 2px dashed rgba(255,255,255,.15); overflow: hidden; }
         .lane .runner, .lane .car { position: absolute; top: 50%; transform: translateY(-50%); font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 3px; white-space: nowrap; }
-        .lane .runner { background: #f8fafc; color: #0f172a; left: 62%; }
-        .lane .car { background: #f97316; color: #fff; left: 8%; }
-        @media (prefers-reduced-motion: no-preference) { .lane .car { animation: chase 7s ease-in-out infinite alternate; } }
+        .lane .runner { background: #f8fafc; color: #0f172a; left: 62%; transition: left 0.3s ease; }
+        .lane .car { background: #f97316; color: #fff; left: 8%; transition: left 0.3s ease; }
+        @media (prefers-reduced-motion: no-preference) { .lane.animating .car { animation: chase 7s ease-in-out infinite alternate; } }
         @keyframes chase { from { left: 4%; } to { left: 46%; } }
         .custom-scroll::-webkit-scrollbar { height: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: #0f172a; }
@@ -55,13 +55,12 @@
     <div id="contact-modal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm hidden overflow-y-auto py-10">
         <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 max-w-lg w-full mx-4 shadow-2xl relative my-auto">
             <button onclick="closeContactModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i data-lucide="x"></i></button>
-            <h3 class="text-xl font-bold mb-1 text-white">Plan con Mariana Carmona</h3>
-            <p class="text-slate-400 text-sm mb-5">Déjanos tus datos y Mariana te contactará para armar tu plan a medida. Analizaremos tu VDOT con estos datos.</p>
+            <h3 class="text-xl font-bold mb-1 text-white">Plan 100% Personalizado</h3>
+            <p class="text-slate-400 text-sm mb-5">Déjanos tus datos y Mariana Carmona te contactará para llevar tu entrenamiento al siguiente nivel.</p>
 
             <form id="leadForm" name="plan-personalizado" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="submitLead(event)" class="space-y-4">
                 <input type="hidden" name="form-name" value="plan-personalizado">
                 <p hidden><label>No llenar <input name="bot-field" id="botField"></label></p>
-                <!-- Campos ocultos calculados -->
                 <input type="hidden" id="hdn-vdot" name="vdot">
                 <input type="hidden" id="hdn-obj" name="objetivo_km">
                 <input type="hidden" id="hdn-ritmo" name="ritmo_crucero">
@@ -71,22 +70,21 @@
                     <div><label class="block text-xs text-slate-400 mb-1">Correo</label><input type="email" id="lEmail" name="correo" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"></div>
                     <div><label class="block text-xs text-slate-400 mb-1">WhatsApp</label><input type="tel" id="lPhone" name="whatsapp" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"></div>
                     
-                    <div><label class="block text-xs text-slate-400 mb-1">Edad</label><input type="number" id="lAge" name="edad" value="30" min="18" max="85" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"></div>
-                    <div><label class="block text-xs text-slate-400 mb-1">Sexo</label><select id="lSex" name="sexo" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"><option value="F">Mujer</option><option value="M">Hombre</option></select></div>
-                    
-                    <div><label class="block text-xs text-slate-400 mb-1">Peso (kg)</label><input type="number" id="lWeight" name="peso_kg" value="65" min="35" max="150" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"></div>
-                    <div><label class="block text-xs text-slate-400 mb-1">Ritmo Base (min/km)</label><input type="text" id="lPace" name="ritmo_minimo" value="5:30" required placeholder="5:30" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"></div>
-                    
-                    <div><label class="block text-xs text-slate-400 mb-1">Días/sem</label><select id="lDays" name="dias_semana" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option></select></div>
-                    <div><label class="block text-xs text-slate-400 mb-1">Nivel</label><select id="lLevel" name="nivel" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"><option value="Principiante">Principiante</option><option value="Intermedio" selected>Intermedio</option><option value="Avanzado">Avanzado</option></select></div>
+                    <!-- Pre-llenados desde el dashboard ocultos a la vista o readonly si prefieres -->
+                    <div class="hidden"><input type="number" id="lAge" name="edad" value="30"></div>
+                    <div class="hidden"><input type="text" id="lSex" name="sexo" value="F"></div>
+                    <div class="hidden"><input type="number" id="lWeight" name="peso_kg" value="65"></div>
+                    <div class="hidden"><input type="text" id="lPace" name="ritmo_minimo" value="5:30"></div>
+                    <div class="hidden"><input type="text" id="lDays" name="dias_semana" value="4"></div>
+                    <div class="hidden"><input type="text" id="lLevel" name="nivel" value="Intermedio"></div>
                 </div>
                 
                 <label class="flex items-start gap-2 text-xs text-slate-400 mt-4 cursor-pointer">
                     <input type="checkbox" id="lConsent" name="autorizacion" value="Sí" required class="mt-0.5">
-                    <span class="leading-tight">Autorizo a Vibras Run Club y Mariana Carmona a tratar mis datos para armar mi plan (Ley 1581 de 2012).</span>
+                    <span class="leading-tight">Autorizo a Vibras Run Club y Mariana Carmona a tratar mis datos (Ley 1581 de 2012).</span>
                 </label>
 
-                <button type="submit" id="leadBtn" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-3 rounded-xl transition mt-4 shadow-lg shadow-brand-500/20">Solicitar Plan Personalizado</button>
+                <button type="submit" id="leadBtn" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-3 rounded-xl transition mt-4 shadow-lg shadow-brand-500/20">Solicitar Contacto a Mariana</button>
                 <div id="leadMsg" class="text-sm mt-2 text-center h-5"></div>
             </form>
         </div>
@@ -96,20 +94,20 @@
     <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-40">
         <div class="max-w-[96rem] mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('hook')">
                     <div class="bg-gradient-to-tr from-brand-600 to-amber-500 p-2 rounded-xl glow-orange text-white font-black text-xl">WFL</div>
                     <div>
                         <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-white uppercase">Hub Elite Medellín</h1>
-                        <p class="text-xs text-slate-400 font-medium">Head Coach: Mariana Carmona • Vibras Run Club</p>
+                        <p class="text-xs text-slate-400 font-medium hidden sm:block">Head Coach: Mariana Carmona • Vibras Run Club</p>
                     </div>
                 </div>
                 <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700">
-                    <button onclick="switchRole('athlete')" id="btn-role-athlete" class="px-3 py-1.5 rounded-lg text-xs font-bold transition bg-brand-500 text-white">Atleta</button>
-                    <button onclick="switchRole('coach')" id="btn-role-coach" class="px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white">Entrenador</button>
+                    <button onclick="switchView('hook')" id="nav-hook" class="px-3 py-1.5 rounded-lg text-xs font-bold transition bg-brand-500 text-white">Calculadora</button>
+                    <button onclick="switchView('coach')" id="nav-coach" class="px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white">Coach</button>
                 </div>
             </div>
             <!-- Pista Animada -->
-            <div class="lane" aria-hidden="true">
+            <div class="lane animating" aria-hidden="true">
                 <span class="car">CATCHER CAR</span>
                 <span class="runner">TÚ</span>
             </div>
@@ -119,490 +117,183 @@
     <!-- Contenido Principal -->
     <main class="flex-grow max-w-[96rem] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        <!-- ==================== VISTA ATLETA (AHORA POR DEFECTO) ==================== -->
-        <div id="view-athlete" class="space-y-8">
-            <!-- Login & Solicitud -->
-            <div id="athlete-login-card" class="max-w-3xl mx-auto mt-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
+        <!-- ==================== VISTA 1: GANCHO / CALCULADORA PÚBLICA ==================== -->
+        <div id="view-hook" class="space-y-8">
+            <div class="max-w-4xl mx-auto text-center space-y-4 mb-10">
+                <h2 class="text-4xl sm:text-5xl font-black text-white uppercase tracking-tight">Corre antes de que te <span class="text-brand-500">alcance el auto</span></h2>
+                <p class="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">Ingresa tu ritmo de carrera estimado para descubrir cuántos kilómetros lograrás recorrer antes de ser capturado por el Catcher Car.</p>
+            </div>
+
+            <div class="max-w-3xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                     
-                    <!-- Columna Izquierda: Ingresar con Código -->
-                    <div class="space-y-5 md:pr-6 md:border-r border-slate-800">
-                        <div class="text-center">
-                            <div class="w-12 h-12 bg-brand-500/10 text-brand-500 rounded-full mx-auto flex items-center justify-center mb-3"><i data-lucide="key" class="w-6 h-6"></i></div>
-                            <h2 class="text-xl font-bold text-white">¿Ya tienes tu Clave?</h2>
-                            <p class="text-slate-400 text-xs mt-2">Carga tu plan matemático y simulador.</p>
+                    <!-- Input -->
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Tu Ritmo Constante (min/km)</label>
+                            <input type="text" id="public-pace" value="5:30" oninput="runPublicSim()" class="w-full bg-slate-950 border-2 border-slate-800 focus:border-brand-500 rounded-xl px-6 py-4 text-3xl font-black text-white text-center outline-none transition">
                         </div>
-                        <form onsubmit="handleAthleteLogin(event)" class="space-y-4">
-                            <input type="text" id="login-code-input" required placeholder="Ej. WFL-XXXX" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-lg text-white uppercase font-mono text-center focus:border-brand-500 outline-none transition">
-                            <button type="submit" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-3 rounded-xl transition shadow-md">Ingresar al Dashboard</button>
-                        </form>
-                        <div class="text-center pt-2">
-                            <button onclick="loadDemoAthlete()" class="text-xs text-brand-500 font-semibold hover:underline">O ver Atleta de Prueba</button>
+                        <p class="text-xs text-slate-500 text-center">Modifica el ritmo para ver cómo cambia tu resultado al instante.</p>
+                    </div>
+
+                    <!-- Resultados Gancho -->
+                    <div class="bg-slate-950 rounded-2xl p-6 border border-slate-800 relative overflow-hidden flex flex-col justify-center items-center text-center h-full">
+                        <div class="absolute right-[-20px] top-[-20px] opacity-5"><i data-lucide="crosshair" class="w-40 h-40 text-cyan-400"></i></div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-cyan-500 mb-2 relative z-10">Serás alcanzado a los:</span>
+                        <div id="public-dist" class="text-5xl font-black text-white relative z-10">17.15 km</div>
+                        <div class="text-sm font-mono text-slate-400 mt-3 relative z-10">Tiempo: <span id="public-time" class="text-white">01:34:00</span></div>
+                    </div>
+                </div>
+
+                <div class="mt-10 pt-8 border-t border-slate-800 text-center space-y-4">
+                    <h3 class="text-lg font-bold text-white">¿Quieres superar esta marca?</h3>
+                    <p class="text-sm text-slate-400">Regístrate para obtener un macrociclo matemático de 8 semanas adaptado a este ritmo y a la altimetría de Medellín.</p>
+                    <button onclick="switchView('register')" class="bg-brand-600 hover:bg-brand-500 text-white font-black uppercase tracking-wider px-8 py-4 rounded-xl transition shadow-lg shadow-brand-500/30 text-lg w-full sm:w-auto">
+                        Obtén tu Plan Gratis
+                    </button>
+                    <div class="pt-4"><button onclick="switchView('login')" class="text-xs text-slate-500 hover:text-white underline">Ya tengo una cuenta/clave</button></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== VISTA 2: REGISTRO DE ATLETA ==================== -->
+        <div id="view-register" class="space-y-8 hidden">
+            <div class="max-w-2xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-cyan-500/10 text-cyan-400 rounded-full mx-auto flex items-center justify-center mb-3"><i data-lucide="clipboard-list" class="w-6 h-6"></i></div>
+                    <h2 class="text-2xl font-bold text-white">Genera tu Plan Matemático</h2>
+                    <p class="text-slate-400 text-sm mt-2">Completa tus métricas para que el motor fisiológico calcule tus zonas.</p>
+                </div>
+
+                <form onsubmit="handleSelfRegister(event)" class="space-y-5">
+                    <div><label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Nombre</label><input type="text" id="reg-name" required placeholder="Ej. Carlos Mendoza" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500"></div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Edad</label><input type="number" id="reg-age" required min="18" max="85" value="30" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500"></div>
+                        <div><label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Sexo</label><select id="reg-sex" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500"><option value="F">Mujer</option><option value="M">Hombre</option></select></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Peso (kg)</label><input type="number" id="reg-weight" required min="35" max="150" value="70" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500"></div>
+                        <div><label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Ritmo Base</label><input type="text" id="reg-pace" required value="5:30" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500"></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Días/Sem</label><select id="reg-days" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500"><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option></select></div>
+                        <div><label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Nivel</label><select id="reg-level" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500"><option value="Principiante">Principiante</option><option value="Intermedio" selected>Intermedio</option><option value="Avanzado">Avanzado</option></select></div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 items-end">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Ruta en Medellín</label>
+                            <select id="reg-route" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500">
+                                <option value="aero">Aeroparque Juan Pablo II</option>
+                                <option value="pdr">Parques del Río → Hatillo</option>
+                                <option value="vegas">Avenida Las Vegas</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-brand-500 mb-1 flex justify-between">VDOT <span class="text-slate-500 lowercase">(opcional)</span></label>
+                            <input type="number" id="reg-vdot" step="0.1" value="45.7" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none focus:border-brand-500 font-mono">
                         </div>
                     </div>
 
-                    <!-- Columna Derecha: Solicitar a Mariana -->
-                    <div class="space-y-5 md:pl-2 flex flex-col justify-center">
-                        <div class="text-center">
-                            <div class="w-12 h-12 bg-cyan-500/10 text-cyan-400 rounded-full mx-auto flex items-center justify-center mb-3"><i data-lucide="sparkles" class="w-6 h-6"></i></div>
-                            <h2 class="text-xl font-bold text-white">¿No tienes plan aún?</h2>
-                            <p class="text-slate-400 text-xs mt-2 leading-relaxed">Únete a Vibras Run Club y obtén tu macrociclo y simulación oficial Catcher Car.</p>
-                        </div>
-                        <button onclick="openContactModal()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold py-3 rounded-xl transition shadow-md flex items-center justify-center gap-2">
-                            <i data-lucide="mail" class="w-4 h-4 text-cyan-400"></i>
-                            Solicitar Plan a Mariana
-                        </button>
-                    </div>
+                    <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-cyan-500/20 mt-4 text-lg">Crear Plan y Entrar</button>
+                    <div class="text-center pt-2"><button type="button" onclick="switchView('hook')" class="text-xs text-slate-500 hover:text-white">Volver a la calculadora</button></div>
+                </form>
+            </div>
+        </div>
 
+        <!-- ==================== VISTA 2.1: LOGIN (SOLO CLAVE) ==================== -->
+        <div id="view-login" class="space-y-8 hidden">
+            <div class="max-w-md mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl mt-10">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-white">Ingreso de Atleta</h2>
+                </div>
+                <form onsubmit="handleAthleteLogin(event)" class="space-y-4">
+                    <input type="text" id="login-code-input" required placeholder="Ej. WFL-XXXX" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-lg text-white uppercase font-mono text-center focus:border-brand-500 outline-none">
+                    <button type="submit" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-3 rounded-xl transition">Ingresar</button>
+                </form>
+                <div class="text-center pt-4 border-t border-slate-800 mt-6">
+                    <button onclick="switchView('hook')" class="text-xs text-slate-500 hover:text-white underline">Volver al inicio</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== VISTA 3: DASHBOARD ATLETA ==================== -->
+        <div id="view-dashboard" class="space-y-6 hidden">
+            
+            <!-- Banner Upsell Mariana -->
+            <div class="bg-gradient-to-r from-brand-900/40 to-slate-900 border border-brand-500/30 rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
+                <div>
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="award" class="w-5 h-5 text-brand-500"></i> ¿Quieres asegurar tu meta?</h3>
+                    <p class="text-slate-300 text-sm mt-1">El plan matemático es una gran guía, pero el <strong>acompañamiento profesional de Mariana Carmona</strong> marcará la diferencia real.</p>
+                </div>
+                <button onclick="openContactModal()" class="shrink-0 bg-brand-600 hover:bg-brand-500 text-white font-bold py-3 px-6 rounded-xl transition shadow-md w-full sm:w-auto">
+                    Contactar a Mariana
+                </button>
+            </div>
+
+            <!-- Métricas Top -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+                    <span class="text-xs font-semibold uppercase text-slate-400 block mb-1">Corredor</span>
+                    <h3 id="dash-name" class="text-lg font-bold text-white truncate">Nombre</h3>
+                    <span id="dash-info" class="text-xs text-brand-500 font-mono">Info</span>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+                    <span class="text-xs font-semibold uppercase text-slate-400 block mb-1">Ritmo Plano Base</span>
+                    <div id="dash-pace" class="text-2xl font-black text-white">0:00 <span class="text-xs font-normal text-slate-400">min/km</span></div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl border-l-4 border-l-cyan-500">
+                    <span class="text-xs font-semibold uppercase text-slate-400 block mb-1">Alcance Catcher Car</span>
+                    <div id="dash-catch-km" class="text-2xl font-black text-cyan-400">0.0 km</div>
+                    <span id="dash-catch-time" class="text-xs text-slate-500 font-mono">00:00:00</span>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+                    <span class="text-xs font-semibold uppercase text-slate-400 block mb-1">VDOT Calculado</span>
+                    <div id="dash-vdot" class="text-2xl font-black text-emerald-400">00.0</div>
+                    <span class="text-xs text-slate-500">Motor Fisiológico</span>
                 </div>
             </div>
 
-            <!-- Dashboard -->
-            <div id="athlete-dashboard" class="space-y-6 hidden">
-                <!-- Métricas Top -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-                        <span class="text-xs font-semibold uppercase text-slate-400 block mb-1">Corredor</span>
-                        <h3 id="dash-name" class="text-lg font-bold text-white truncate">Nombre</h3>
-                        <span id="dash-info" class="text-xs text-brand-500 font-mono">Info</span>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-                        <span class="text-xs font-semibold uppercase text-slate-400 block mb-1">Ritmo Plano Base</span>
-                        <div id="dash-pace" class="text-2xl font-black text-white">0:00 <span class="text-xs font-normal text-slate-400">min/km</span></div>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl border-l-4 border-l-cyan-500 relative overflow-hidden">
-                        <div class="absolute right-[-10px] top-[-10px] opacity-10"><i data-lucide="crosshair" class="w-24 h-24 text-cyan-400"></i></div>
-                        <span class="text-xs font-semibold uppercase text-slate-400 block mb-1">Alcance Catcher Car</span>
-                        <div id="dash-catch-km" class="text-2xl font-black text-cyan-400 relative z-10">0.0 km</div>
-                        <span id="dash-catch-time" class="text-xs text-slate-500 font-mono relative z-10">00:00:00</span>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-                        <span class="text-xs font-semibold uppercase text-slate-400 block mb-1">Estado VDOT / Forma</span>
-                        <div id="dash-vdot" class="text-2xl font-black text-emerald-400">00.0</div>
-                        <span class="text-xs text-slate-500">Ajuste por edad WMA</span>
-                    </div>
+            <!-- Pestañas -->
+            <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-4">
+                <button onclick="switchAthleteTab('plan')" id="tab-btn-plan" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition text-slate-400 bg-slate-900 hover:text-white border border-slate-800">Plan 8 Semanas</button>
+                <button onclick="switchAthleteTab('sim')" id="tab-btn-sim" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition bg-cyan-600 text-white shadow-md">Simulador & Gráfico</button>
+                <button onclick="switchAthleteTab('nutri')" id="tab-btn-nutri" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition text-slate-400 bg-slate-900 hover:text-white border border-slate-800">Nutrición & Zonas</button>
+                <button onclick="switchView('hook')" class="ml-auto px-4 py-2.5 rounded-xl font-semibold text-xs text-slate-400 hover:text-red-400 transition flex items-center gap-1"><i data-lucide="log-out" class="w-4 h-4"></i> Salir</button>
+            </div>
+
+            <!-- Contenido Tabs (Igual que antes) -->
+            <div id="tab-plan" class="space-y-6 hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+                    <div id="athlete-plan-container"></div>
                 </div>
+            </div>
 
-                <!-- Pestañas -->
-                <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-4">
-                    <button onclick="switchAthleteTab('plan')" id="tab-btn-plan" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition text-slate-400 bg-slate-900 hover:text-white border border-slate-800">Plan 8 Semanas</button>
-                    <button onclick="switchAthleteTab('sim')" id="tab-btn-sim" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition bg-brand-600 text-white shadow-md">Simulador & Gráfico</button>
-                    <button onclick="switchAthleteTab('nutri')" id="tab-btn-nutri" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition text-slate-400 bg-slate-900 hover:text-white border border-slate-800">Nutrición & Zonas</button>
-                    <button onclick="logoutAthlete()" class="ml-auto px-4 py-2.5 rounded-xl font-semibold text-xs text-slate-400 hover:text-red-400 transition flex items-center gap-1"><i data-lucide="log-out" class="w-4 h-4"></i> Salir</button>
-                </div>
-
-                <!-- Tab 1: Plan -->
-                <div id="tab-plan" class="space-y-6 hidden">
-                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
-                        <h3 class="text-xl font-bold text-white">Macrociclo de Entrenamiento (8 Semanas)</h3>
-                        <p class="text-slate-400 text-xs mt-1 mb-6">Semanas dinámicas ajustadas a tu capacidad fisiológica.</p>
-                        <div id="athlete-plan-container"></div>
+            <div id="tab-sim" class="space-y-6">
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+                    <div class="w-full overflow-x-auto custom-scroll bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <div id="chaseChart" class="min-w-[600px] h-[300px]"></div>
                     </div>
-                </div>
-
-                <!-- Tab 2: Simulador Gráfico (Activo por defecto al entrar al dashboard) -->
-                <div id="tab-sim" class="space-y-6">
-                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
-                        <div class="flex justify-between items-center mb-1">
-                            <h3 class="text-xl font-bold text-white">Gráfico de Persecución Oficial</h3>
-                            <span class="px-2 py-1 bg-brand-500/20 text-brand-500 text-xs font-bold rounded">Simulador WFL</span>
+                    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-slate-950 p-5 rounded-xl border border-slate-800">
+                            <h4 class="text-sm font-bold text-brand-500 mb-3">Táctica Sugerida</h4>
+                            <ul class="text-sm text-slate-300 space-y-3 list-disc pl-4" id="tactics-list"></ul>
                         </div>
-                        <p class="text-slate-400 text-xs mb-6">El auto acelera progresivamente cada 30 min según la normativa oficial.</p>
-                        
-                        <div class="w-full overflow-x-auto custom-scroll bg-slate-950 p-4 rounded-xl border border-slate-800">
-                            <div id="chaseChart" class="min-w-[600px] h-[300px]"></div>
-                        </div>
-
-                        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="bg-slate-950 p-5 rounded-xl border border-slate-800">
-                                <h4 class="text-sm font-bold text-brand-500 mb-3 flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4"></i> Táctica Sugerida</h4>
-                                <ul class="text-sm text-slate-300 space-y-3 list-disc pl-4" id="tactics-list"></ul>
-                            </div>
-                            <div class="bg-slate-950 p-5 rounded-xl border border-slate-800">
-                                <h4 class="text-sm font-bold text-cyan-400 mb-3 flex items-center gap-2"><i data-lucide="timer" class="w-4 h-4"></i> Tabla de Paso (Splits)</h4>
-                                <div class="overflow-x-auto custom-scroll">
-                                    <table class="w-full text-xs text-left text-slate-300">
-                                        <thead class="text-slate-500 uppercase border-b border-slate-800"><tr><th class="pb-2">KM</th><th class="pb-2">Reloj</th><th class="pb-2">Auto Est.</th></tr></thead>
-                                        <tbody id="splits-table" class="divide-y divide-slate-800 font-mono"></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tab 3: Nutrición y Zonas -->
-                <div id="tab-nutri" class="space-y-6 hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
-                            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="droplet" class="w-5 h-5 text-blue-400"></i> Combustible e Hidratación</h3>
-                            <div id="nutrition-info" class="space-y-3 text-sm text-slate-300 leading-relaxed"></div>
-                        </div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
-                            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="activity" class="w-5 h-5 text-emerald-400"></i> Zonas de Ritmo VDOT</h3>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-sm text-left text-slate-300">
-                                    <thead class="text-slate-500 text-xs uppercase border-b border-slate-800"><tr><th class="pb-2">Zona</th><th class="pb-2 text-right">Ritmo (min/km)</th></tr></thead>
-                                    <tbody id="zones-table" class="divide-y divide-slate-800 font-mono"></tbody>
+                        <div class="bg-slate-950 p-5 rounded-xl border border-slate-800">
+                            <h4 class="text-sm font-bold text-cyan-400 mb-3">Tabla de Paso (Splits)</h4>
+                            <div class="overflow-x-auto custom-scroll">
+                                <table class="w-full text-xs text-left text-slate-300">
+                                    <thead class="text-slate-500 uppercase border-b border-slate-800"><tr><th class="pb-2">KM</th><th class="pb-2">Reloj</th><th class="pb-2">Auto Est.</th></tr></thead>
+                                    <tbody id="splits-table" class="divide-y divide-slate-800 font-mono"></tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
-        </div>
 
-        <!-- ==================== VISTA ENTRENADOR (OCULTA POR DEFECTO) ==================== -->
-        <div id="view-coach" class="space-y-6 hidden">
-            <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
-                <!-- Formulario -->
-                <div class="xl:col-span-4 space-y-6">
-                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
-                        <h3 class="text-lg font-bold text-white mb-1">Generar Clave Pro</h3>
-                        <p class="text-xs text-slate-400 mb-6">Motor fisiológico VDOT + WMA.</p>
-                        
-                        <form id="form-create-key" onsubmit="handleCreateKey(event)" class="space-y-4">
-                            <div><label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Nombre</label><input type="text" id="athlete-name" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"></div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div><label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Edad</label><input type="number" id="athlete-age" required min="18" max="85" value="30" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"></div>
-                                <div><label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Sexo</label><select id="athlete-sex" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"><option value="F">Mujer</option><option value="M">Hombre</option></select></div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div><label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Peso (kg)</label><input type="number" id="athlete-weight" required min="35" max="150" value="65" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"></div>
-                                <div><label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Ritmo Base</label><input type="text" id="athlete-pace" required value="5:30" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"></div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div><label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Días/Sem</label><select id="athlete-days" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option></select></div>
-                                <div><label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Nivel</label><select id="athlete-level" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"><option value="Principiante">Principiante</option><option value="Intermedio" selected>Intermedio</option><option value="Avanzado">Avanzado</option></select></div>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Ruta en Medellín</label>
-                                <select id="athlete-route" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500">
-                                    <option value="aero">Aeroparque Juan Pablo II</option>
-                                    <option value="pdr">Parques del Río → Hatillo</option>
-                                    <option value="vegas">Avenida Las Vegas</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-brand-500/20 mt-2">Emitir Plan Matemático</button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Lista de Atletas -->
-                <div class="xl:col-span-8">
-                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl h-full">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-lg font-bold text-white">Atletas y Proyecciones VDOT</h3>
-                            <span id="athletes-count" class="text-xs px-3 py-1 bg-slate-800 text-slate-300 rounded-full font-mono">0</span>
-                        </div>
-                        <div id="coach-athletes-list" class="space-y-3"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <script>
-        /* ==========================================
-           MOTOR MATEMÁTICO (VDOT + Catcher Car)
-           ========================================== */
-        const CAR = [[0.5,14],[1.0,15],[1.5,16],[2.0,17],[2.5,18],[3.0,22],[3.5,26],[4.0,30],[4.5,34]];
-        function carPos(tH){let d=0;for(let i=0;i<CAR.length;i++){const s=CAR[i][0],v=CAR[i][1],e=i+1<CAR.length?CAR[i+1][0]:1e9;if(tH<=s)break;d+=v*(Math.min(tH,e)-s);}return d;}
-        function carTimeAt(D){let lo=0.5,hi=20;for(let k=0;k<100;k++){const m=(lo+hi)/2;if(carPos(m)<D)lo=m;else hi=m;}return hi;}
-        function minPaceFor(D){return carTimeAt(D)*60/D;}
-        function distForPace(p){const v=60/p;let lo=0.5,hi=20;for(let k=0;k<100;k++){const m=(lo+hi)/2;if(v*m>carPos(m))lo=m;else hi=m;}return v*hi;}
-        const vo2=v=>-4.60+0.182258*v+0.000104*v*v;
-        function vdotFromEasy(p){return vo2(1000/p)/0.70;}
-        function speedForVO2(x){const a=0.000104,b=0.182258,c=-4.60-x;return(-b+Math.sqrt(b*b-4*a*c))/(2*a);}
-        function paceAtPct(vd,p){return 1000/speedForVO2(vd*p);}
-        const cr=i=>155.4*i**5-30.4*i**4-43.3*i**3+46.3*i**2+19.5*i+3.6;
-        function routeFactor(r){let D=r.dist,G=r.gain,N=r.net||0;if(!r.loop){G=G+(G-N);D=D*2;N=0;}const half=D*1000/2;return((cr(G/half)+cr(-(G-N)/half))/2)/3.6;}
-        function marginSec(p,f){return p*(f-1)*60;}
-        function getWmaFactor(age, sex) {
-            let a = Math.max(18, Math.min(85, age));
-            if(a <= 32) return 1.0;
-            let decay = sex === 'F' ? 0.008 : 0.009;
-            return Math.max(0.4, 1.0 - ((a - 32) * decay)); 
-        }
-
-        const ROUTES = {
-            'aero': { name: 'Aeroparque', dist: 10.04, gain: 145, net: 0, loop: true },
-            'pdr': { name: 'Parques del Río', dist: 31.52, gain: 225, net: -126, loop: false },
-            'vegas': { name: 'Av. Las Vegas', dist: 9.91, gain: 122, net: -103, loop: false }
-        };
-        const LEVEL = {
-            Principiante: {long0: 40, easy: 30, longCap: 120},
-            Intermedio: {long0: 60, easy: 40, longCap: 150},
-            Avanzado: {long0: 80, easy: 50, longCap: 150}
-        };
-
-        const fmtPace = m => { let s = Math.round(m*60); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
-        const fmtDur = min => { let s = Math.round(min*60); const h = Math.floor(s/3600), mm = Math.floor(s%3600/60), ss = s%60; return (h?h+':'+String(mm).padStart(2,'0'):mm)+':'+String(ss).padStart(2,'0'); };
-        function parseClock(s) { const p = s.split(':').map(Number); return p.length === 2 ? p[0] + p[1]/60 : 5.5; }
-
-        /* ==========================================
-           LOGICA APP Y UI
-           ========================================== */
-        let appState = { role: 'athlete', athletes: [], current: null }; // Atleta por defecto
-
-        window.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-            createAthlete("Camila Rojas Demo", 30, "F", 65, "5:30", "4", "Intermedio", "aero", "WFL-DEMO");
-        });
-
-        function switchRole(role) {
-            appState.role = role;
-            document.getElementById('btn-role-coach').className = role === 'coach' ? 'px-3 py-1.5 rounded-lg text-xs font-bold transition bg-brand-500 text-white' : 'px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white';
-            document.getElementById('btn-role-athlete').className = role === 'athlete' ? 'px-3 py-1.5 rounded-lg text-xs font-bold transition bg-brand-500 text-white' : 'px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white';
-            document.getElementById('view-coach').classList.toggle('hidden', role !== 'coach');
-            document.getElementById('view-athlete').classList.toggle('hidden', role !== 'athlete');
-            if (role === 'coach') renderCoachList();
-        }
-
-        // Modales
-        function showModal(title, msg) {
-            document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-message').innerText = msg;
-            document.getElementById('custom-modal').classList.remove('hidden');
-        }
-        function closeModal() { document.getElementById('custom-modal').classList.add('hidden'); }
-        function openContactModal() { document.getElementById('contact-modal').classList.remove('hidden'); }
-        function closeContactModal() { document.getElementById('contact-modal').classList.add('hidden'); }
-
-        // Envio Formulario Netlify
-        async function submitLead(e) {
-            e.preventDefault();
-            const btn = document.getElementById('leadBtn');
-            const msg = document.getElementById('leadMsg');
-            btn.disabled = true;
-            msg.innerHTML = '<span class="text-cyan-400 font-semibold">Procesando envío a Mariana...</span>';
-
-            // Calcular variables para el form oculto
-            const age = +document.getElementById('lAge').value;
-            const sex = document.getElementById('lSex').value;
-            const pace = parseClock(document.getElementById('lPace').value);
-            const wma = getWmaFactor(age, sex);
-            const vdot = (vdotFromEasy(pace) / wma).toFixed(1);
-            
-            document.getElementById('hdn-vdot').value = vdot;
-            document.getElementById('hdn-obj').value = distForPace(pace).toFixed(1);
-            document.getElementById('hdn-ritmo').value = fmtPace(pace - Math.max(0, marginSec(pace, routeFactor(ROUTES['aero']))/60));
-
-            const form = document.getElementById('leadForm');
-            const formData = new FormData(form);
-
-            try {
-                const res = await fetch('/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams(formData).toString()
-                });
-                if (!res.ok) throw new Error('Error en red');
-                msg.innerHTML = '<span class="text-emerald-400 font-bold">¡Datos enviados con éxito!</span>';
-                form.reset();
-                setTimeout(() => { closeContactModal(); msg.innerHTML = ''; }, 3000);
-            } catch (error) {
-                msg.innerHTML = '<span class="text-red-400 font-bold">Ocurrió un error. Intenta de nuevo.</span>';
-            } finally {
-                btn.disabled = false;
-            }
-        }
-
-        // Crear y Listar Atletas
-        function createAthlete(name, age, sex, weight, paceStr, days, level, routeId, codeOverride = null) {
-            const pace = parseClock(paceStr);
-            const route = ROUTES[routeId];
-            const vdotAdjusted = vdotFromEasy(pace) / getWmaFactor(age, sex); 
-            const targetDist = distForPace(pace); 
-            const catchTime = carTimeAt(targetDist) * 60;
-            const cruisePace = pace - Math.max(0, marginSec(pace, routeFactor(route)))/60;
-
-            const athlete = {
-                id: Date.now().toString(),
-                code: codeOverride || 'WFL-' + Math.random().toString(36).substring(2,6).toUpperCase(),
-                name, age, sex, weight, paceStr, pace, days, level, route,
-                vdot: vdotAdjusted, catchDist: targetDist, catchTime: catchTime, cruisePace: cruisePace
-            };
-            appState.athletes.push(athlete);
-            return athlete;
-        }
-
-        function handleCreateKey(e) {
-            e.preventDefault();
-            const a = createAthlete(
-                document.getElementById('athlete-name').value,
-                +document.getElementById('athlete-age').value,
-                document.getElementById('athlete-sex').value,
-                +document.getElementById('athlete-weight').value,
-                document.getElementById('athlete-pace').value,
-                document.getElementById('athlete-days').value,
-                document.getElementById('athlete-level').value,
-                document.getElementById('athlete-route').value
-            );
-            renderCoachList();
-            showModal('Clave Emitida', `El código para ${a.name} es: ${a.code}`);
-            e.target.reset();
-        }
-
-        function renderCoachList() {
-            const list = document.getElementById('coach-athletes-list');
-            document.getElementById('athletes-count').innerText = appState.athletes.length;
-            list.innerHTML = appState.athletes.map(a => `
-                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex justify-between items-center gap-4">
-                    <div>
-                        <h4 class="font-bold text-white text-sm">${a.name} <span class="text-brand-500 font-mono text-xs ml-2">${a.code}</span></h4>
-                        <div class="flex gap-3 text-xs text-slate-400 mt-1 font-mono">
-                            <span>VDOT: ${a.vdot.toFixed(1)}</span>
-                            <span>Meta: ${a.catchDist.toFixed(1)} km</span>
-                        </div>
-                    </div>
-                </div>
-            `).reverse().join('');
-        }
-
-        // Dashboard Atleta
-        function handleAthleteLogin(e) {
-            e.preventDefault();
-            const code = document.getElementById('login-code-input').value.trim().toUpperCase();
-            const athlete = appState.athletes.find(a => a.code === code);
-            if (!athlete) return showModal('Error', 'Código incorrecto. Verifica o solicita uno a Mariana.');
-            appState.current = athlete;
-            loadAthleteDashboard();
-        }
-        function loadDemoAthlete() { if(appState.athletes.length) { appState.current = appState.athletes[0]; loadAthleteDashboard(); } }
-        function logoutAthlete() {
-            appState.current = null;
-            document.getElementById('athlete-dashboard').classList.add('hidden');
-            document.getElementById('athlete-login-card').classList.remove('hidden');
-        }
-
-        function loadAthleteDashboard() {
-            const a = appState.current;
-            document.getElementById('athlete-login-card').classList.add('hidden');
-            document.getElementById('athlete-dashboard').classList.remove('hidden');
-
-            document.getElementById('dash-name').innerText = a.name;
-            document.getElementById('dash-info').innerText = `${a.age} años | ${a.weight} kg | ${a.level}`;
-            document.getElementById('dash-pace').innerHTML = `${fmtPace(a.pace)} <span class="text-xs text-slate-400">min/km</span>`;
-            document.getElementById('dash-catch-km').innerText = `${a.catchDist.toFixed(2)} km`;
-            document.getElementById('dash-catch-time').innerText = `Tiempo: ${fmtDur(a.catchTime/60)}`;
-            document.getElementById('dash-vdot').innerText = a.vdot.toFixed(1);
-
-            switchAthleteTab('sim'); // Mostrar el gráfico por defecto al entrar
-            renderAthletePlan(a);
-            renderNutritionAndZones(a);
-            setTimeout(() => drawChaseSVG(a), 50); // Pequeño delay para asegurar que el DOM pintó el contenedor
-        }
-
-        function switchAthleteTab(tab) {
-            ['plan', 'sim', 'nutri'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
-                document.getElementById(`tab-btn-${t}`).className = 'px-5 py-2.5 rounded-xl font-semibold text-sm transition text-slate-400 bg-slate-900 hover:text-white border border-slate-800';
-            });
-            document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            document.getElementById(`tab-btn-${tab}`).className = 'px-5 py-2.5 rounded-xl font-semibold text-sm transition bg-brand-600 text-white shadow-md';
-        }
-
-        function renderAthletePlan(a) {
-            const container = document.getElementById('athlete-plan-container');
-            const daysMap = { '3': ['Mar','Jue','Dom'], '4': ['Mar','Jue','Sáb','Dom'], '5': ['Mar','Mié','Vie','Sáb','Dom'] };
-            const myDays = daysMap[a.days] || daysMap['4'];
-            
-            let html = '<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">';
-            for(let w=1; w<=8; w++) {
-                const isRaceWeek = w === 8;
-                const isTaper = w >= 7;
-                const baseLong = LEVEL[a.level].long0;
-                const factor = isTaper ? (isRaceWeek ? 0.4 : 0.6) : (w / 6); 
-                const longRun = Math.round((baseLong + (baseLong * factor)) / 5) * 5; 
-                
-                html += `<div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition">
-                    <h4 class="font-bold text-white mb-4 border-b border-slate-800 pb-2">Semana ${w} ${isRaceWeek ? '<span class="text-brand-500 text-xs ml-2 uppercase">(Carrera)</span>' : isTaper ? '<span class="text-cyan-500 text-xs ml-2 uppercase">(Afinamiento)</span>' : ''}</h4>
-                    <div class="space-y-3">`;
-                
-                myDays.forEach((day, i) => {
-                    let title, desc;
-                    if(isRaceWeek && i === myDays.length -1) {
-                        title = "🏁 WINGS FOR LIFE WORLD RUN"; desc = `Ritmo crucero objetivo: ${fmtPace(a.cruisePace)} min/km.`;
-                    } else if (i === myDays.length -1) {
-                        title = "Tirada Larga"; desc = `${longRun} min continuos ritmo base.`;
-                    } else if (i === 0) {
-                        title = "Rodaje Aeróbico"; desc = `45 min ritmo suave (${fmtPace(a.pace)} min/km).`;
-                    } else {
-                        title = "Fartlek / Zonas"; desc = isTaper ? `10 min calentamiento + 3x3 min WFL + 10 min suave.` : `15 min cal. + 5x1000m umbral + 10 min suave.`;
-                    }
-                    html += `<div class="flex gap-4 items-start pb-2 border-b border-slate-800/50 last:border-0 last:pb-0">
-                        <div class="w-10 h-8 rounded bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-300 shrink-0 mt-0.5">${day}</div>
-                        <div><strong class="text-white text-sm block">${title}</strong><span class="text-xs text-slate-400 block mt-0.5">${desc}</span></div>
-                    </div>`;
-                });
-                html += `</div></div>`;
-            }
-            container.innerHTML = html + '</div>';
-        }
-
-        function renderNutritionAndZones(a) {
-            const t = a.catchTime;
-            document.getElementById('nutrition-info').innerHTML = t < 75 
-                ? '<p>Para tu ritmo proyectado, la hidratación básica (agua) es suficiente. Evita exceso de sólidos en carrera.</p>' 
-                : `<p>Se estiman ${fmtDur(t/60)} de esfuerzo. Consume <strong>30-45g de carbohidratos/hora</strong> (Total est.: ${Math.round(40*t/60)}g) en forma de geles o bebida isotónica. Límite sugerido de pérdida de líquido post-entreno: ${(a.weight*0.02).toFixed(1)}kg.</p>`;
-
-            document.getElementById('zones-table').innerHTML = `
-                <tr><td class="pt-3 font-semibold">Suave (E)</td><td class="pt-3 font-mono text-right text-slate-300">${fmtPace(paceAtPct(a.vdot,0.70))}</td></tr>
-                <tr><td class="pt-3 font-semibold">Crucero WFL</td><td class="pt-3 font-mono text-right text-cyan-400 font-bold">${fmtPace(a.cruisePace)}</td></tr>
-                <tr><td class="pt-3 font-semibold">Umbral (T)</td><td class="pt-3 font-mono text-right text-brand-500 font-bold">${fmtPace(paceAtPct(a.vdot,0.88))}</td></tr>
-                <tr><td class="pt-3 pb-2 font-semibold">Intervalos (I)</td><td class="pt-3 pb-2 font-mono text-right text-slate-300">${fmtPace(paceAtPct(a.vdot,0.975))}</td></tr>
-            `;
-        }
-
-        function drawChaseSVG(a) {
-            const W = 600, H = 250, Pl = 40, Pr = 20, Pt = 20, Pb = 30;
-            const tMax = Math.max(60, Math.ceil((a.catchTime + 10)/15)*15);
-            const dMax = Math.ceil(a.catchDist * 1.2 / 5)*5 || 5;
-            
-            const x = t => Pl + (t/tMax)*(W - Pl - Pr);
-            const y = d => H - Pb - (d/dMax)*(H - Pt - Pb);
-
-            let carPath = '';
-            for(let t=0; t<=tMax; t++) carPath += `${t?'L':'M'}${x(t).toFixed(1)},${y(Math.min(carPos(t/60), dMax)).toFixed(1)}`;
-            const runPath = `M${x(0)},${y(0)}L${x(a.catchTime).toFixed(1)},${y(a.catchDist).toFixed(1)}`;
-
-            let grid = '';
-            for(let t=0; t<=tMax; t+=15) {
-                grid += `<line x1="${x(t)}" x2="${x(t)}" y1="${Pt}" y2="${H-Pb}" stroke="#1e293b"/>
-                         <text x="${x(t)}" y="${H-10}" text-anchor="middle" font-size="10" fill="#64748b" font-family="monospace">${t}m</text>`;
-            }
-            for(let d=0; d<=dMax; d+=5) {
-                grid += `<line x1="${Pl}" x2="${W-Pr}" y1="${y(d)}" y2="${y(d)}" stroke="#1e293b"/>
-                         <text x="${Pl-5}" y="${y(d)+4}" text-anchor="end" font-size="10" fill="#64748b" font-family="monospace">${d}k</text>`;
-            }
-
-            document.getElementById('chaseChart').innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="w-full h-full">
-                ${grid}
-                <path d="${carPath}" fill="none" stroke="#f97316" stroke-width="3"/>
-                <path d="${runPath}" fill="none" stroke="#22d3ee" stroke-width="2.5" stroke-dasharray="5 5"/>
-                <circle cx="${x(a.catchTime)}" cy="${y(a.catchDist)}" r="5" fill="#f97316"/>
-                <text x="${Math.min(x(a.catchTime)-10, W-100)}" y="${Math.max(y(a.catchDist)-15, 15)}" font-size="12" font-weight="bold" fill="#fff" text-anchor="end">¡Alcanzado! ${a.catchDist.toFixed(1)}km</text>
-            </svg>`;
-
-            document.getElementById('tactics-list').innerHTML = `
-                <li>Sal a <strong>${fmtPace(a.cruisePace)} min/km</strong> constantes desde el inicio.</li>
-                <li>El Catcher Car arranca 30 minutos después de ti. ¡No te quemes en los primeros kilómetros!</li>
-                <li>Ruta Base: ${a.route.name}. Recuerda que las subidas bajan tu paso; recupéralo en los planos y bajadas.</li>
-            `;
-
-            let splitsHtml = '';
-            const step = a.catchDist <= 15 ? 3 : 5;
-            for(let k=step; k<a.catchDist; k+=step) {
-                const t = k * a.cruisePace;
-                splitsHtml += `<tr><td class="pt-2">KM ${k}</td><td class="pt-2">${fmtDur(t)}</td><td class="pt-2 text-brand-500">${fmtKm(carPos(t/60))} km</td></tr>`;
-            }
-            splitsHtml += `<tr><td class="pt-2 font-bold text-cyan-400 border-t border-slate-800 mt-2">Meta ${fmtKm(a.catchDist)}</td><td class="pt-2 text-cyan-400 font-bold border-t border-slate-800 mt-2">${fmtDur(a.catchTime)}</td><td class="pt-2 text-brand-500 font-bold border-t border-slate-800 mt-2">${fmtKm(a.catchDist)} km</td></tr>`;
-            document.getElementById('splits-table').innerHTML = splitsHtml;
-        }
-        function fmtKm(km) { return km.toFixed(1); }
-    </script>
-</body>
-</html>
+            <div id="tab-nutri" class="space-y-6 hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
