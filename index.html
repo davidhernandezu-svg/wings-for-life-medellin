@@ -3,42 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wings for Life - Hub de Entrenamiento Elite</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Wings for Life - Elite Medellín</title>
+    
+    <!-- Configuración Tailwind ANTES del CDN para evitar parpadeos/pantalla negra -->
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: { 500: '#f97316', 600: '#ea580c' },
-                        dark: '#020617', card: '#0f172a'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace']
+        tailwind = {
+            config: {
+                darkMode: 'class',
+                theme: {
+                    extend: {
+                        colors: {
+                            brand: { 500: '#f97316', 600: '#ea580c' },
+                            dark: '#020617', card: '#0f172a'
+                        },
+                        fontFamily: {
+                            sans: ['Inter', 'sans-serif'],
+                            mono: ['JetBrains Mono', 'monospace']
+                        }
                     }
                 }
             }
         }
     </script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Nativo de Respaldo Anti-Pantalla Negra -->
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; }
+        /* Reglas críticas de renderizado inicial */
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
+        .hidden { display: none !important; }
+        .block { display: block !important; }
+        
+        /* Efectos visuales */
         .glow-orange { box-shadow: 0 0 25px rgba(249, 115, 22, 0.3); }
         .lane { position: relative; height: 34px; border-top: 2px dashed rgba(255,255,255,.15); border-bottom: 2px dashed rgba(255,255,255,.15); overflow: hidden; }
         .lane .runner, .lane .car { position: absolute; top: 50%; transform: translateY(-50%); font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 3px; white-space: nowrap; }
         .lane .runner { background: #f8fafc; color: #0f172a; left: 62%; transition: left 0.3s ease; }
         .lane .car { background: #f97316; color: #fff; left: 8%; transition: left 0.3s ease; }
-        @media (prefers-reduced-motion: no-preference) { .lane.animating .car { animation: chase 7s ease-in-out infinite alternate; } }
+        
+        @media (prefers-reduced-motion: no-preference) { 
+            .lane.animating .car { animation: chase 7s ease-in-out infinite alternate; } 
+        }
         @keyframes chase { from { left: 4%; } to { left: 46%; } }
+        
+        /* Scrollbar */
         .custom-scroll::-webkit-scrollbar { height: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: #0f172a; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
 
     <!-- Modal de Alertas -->
     <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden">
@@ -60,9 +76,77 @@
 
             <form id="leadForm" name="plan-personalizado" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="submitLead(event)" class="space-y-4">
                 <input type="hidden" name="form-name" value="plan-personalizado">
-                <p hidden><label>No llenar <input name="bot-field" id="botField"></label></p>
+                <p class="hidden"><label>No llenar <input name="bot-field" id="botField"></label></p>
                 <input type="hidden" id="hdn-vdot" name="vdot">
                 <input type="hidden" id="hdn-obj" name="objetivo_km">
                 <input type="hidden" id="hdn-ritmo" name="ritmo_crucero">
 
-                <div
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-2"><label class="block text-xs text-slate-400 mb-1">Nombre Completo</label><input type="text" id="lName" name="nombre" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"></div>
+                    <div><label class="block text-xs text-slate-400 mb-1">Correo</label><input type="email" id="lEmail" name="correo" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"></div>
+                    <div><label class="block text-xs text-slate-400 mb-1">WhatsApp</label><input type="tel" id="lPhone" name="whatsapp" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none focus:border-brand-500"></div>
+                    
+                    <!-- Pre-llenados desde el dashboard ocultos a la vista -->
+                    <div class="hidden"><input type="number" id="lAge" name="edad" value="30"></div>
+                    <div class="hidden"><input type="text" id="lSex" name="sexo" value="F"></div>
+                    <div class="hidden"><input type="number" id="lWeight" name="peso_kg" value="65"></div>
+                    <div class="hidden"><input type="text" id="lPace" name="ritmo_minimo" value="5:30"></div>
+                    <div class="hidden"><input type="text" id="lDays" name="dias_semana" value="4"></div>
+                    <div class="hidden"><input type="text" id="lLevel" name="nivel" value="Intermedio"></div>
+                </div>
+                
+                <label class="flex items-start gap-2 text-xs text-slate-400 mt-4 cursor-pointer">
+                    <input type="checkbox" id="lConsent" name="autorizacion" value="Sí" required class="mt-0.5">
+                    <span class="leading-tight">Autorizo a Vibras Run Club y Mariana Carmona a tratar mis datos (Ley 1581 de 2012).</span>
+                </label>
+
+                <button type="submit" id="leadBtn" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-3 rounded-xl transition mt-4 shadow-lg shadow-brand-500/20">Solicitar Contacto a Mariana</button>
+                <div id="leadMsg" class="text-sm mt-2 text-center h-5"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Header & Animated Track -->
+    <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-[96rem] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('hook')">
+                    <div class="bg-gradient-to-tr from-brand-600 to-amber-500 p-2 rounded-xl glow-orange text-white font-black text-xl">WFL</div>
+                    <div>
+                        <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-white uppercase">Elite Medellín</h1>
+                        <p class="text-xs text-slate-400 font-medium hidden sm:block">Head Coach: Mariana Carmona • Vibras Run Club</p>
+                    </div>
+                </div>
+                <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700">
+                    <button onclick="switchView('hook')" id="nav-hook" class="px-3 py-1.5 rounded-lg text-xs font-bold transition bg-brand-500 text-white">Calculadora</button>
+                    <button onclick="switchView('coach')" id="nav-coach" class="px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white">Coach</button>
+                </div>
+            </div>
+            <!-- Pista Animada -->
+            <div class="lane animating" aria-hidden="true">
+                <span class="car">CATCHER CAR</span>
+                <span class="runner">TÚ</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="flex-grow max-w-[96rem] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ==================== VISTA 1: GANCHO / CALCULADORA PÚBLICA ==================== -->
+        <div id="view-hook" class="space-y-8 block">
+            <div class="max-w-4xl mx-auto text-center space-y-4 mb-10">
+                <h2 class="text-4xl sm:text-5xl font-black text-white uppercase tracking-tight">Corre antes de que te <span class="text-brand-500">alcance el auto</span></h2>
+                <p class="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">Ingresa tu ritmo de carrera estimado para descubrir cuántos kilómetros lograrás recorrer antes de ser capturado por el Catcher Car.</p>
+            </div>
+
+            <div class="max-w-3xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    
+                    <!-- Input -->
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Tu Ritmo Constante (min/km)</label>
+                            <input type="text" id="public-pace" value="5:30" oninput="runPublicSim()" class="w-full bg-slate-950 border-2 border-slate-800 focus:border-brand-500 rounded-xl px-6 py-4 text-3xl font-black text-white text-center outline-none transition">
+                        </div>
+                        <p class="text-xs text-slate-500 text-
