@@ -522,6 +522,55 @@ function parsePace(t){const m=/^\s*(\d{1,2}):([0-5]\d)\s*$/.exec(String(t));retu
 // tiempo estricto h:mm:ss o mm:ss
 function parseTime(t){const s=String(t).trim();let m=/^(\d{1,2}):([0-5]\d):([0-5]\d)$/.exec(s);if(m)return +m[1]*60+(+m[2])+(+m[3])/60;m=/^(\d{1,3}):([0-5]\d)$/.exec(s);return m?+m[1]+(+m[2])/60:NaN;}
 
+/* ===== Máscara de reloj (m:ss o h:mm:ss): el separador ":" siempre está fijo y,
+   al completar un segmento, el cursor salta solo al siguiente. ===== */
+function clockMask(id,lens,jumpFirst){
+  const el=$(id);
+  const segsFromValue=v=>{const parts=String(v||'').split(':');return lens.map((_,i)=>(parts[i]||'').replace(/\D/g,'').slice(0,lens[i]));};
+  const build=segs=>segs.join(':');
+  const segAt=(pos,segs)=>{let p=0;for(let i=0;i<segs.length;i++){if(pos<=p+segs[i].length)return[i,pos-p];p+=segs[i].length+1;}return[segs.length-1,segs[segs.length-1].length];};
+  const caretFor=(segs,idx,within)=>{let p=0;for(let i=0;i<idx;i++)p+=segs[i].length+1;return p+within;};
+  const setVal=(segs,idx,within)=>{el.value=build(segs);const c=caretFor(segs,idx,within);el.setSelectionRange(c,c);el.dispatchEvent(new Event('input',{bubbles:true}));};
+  el.addEventListener('keydown',e=>{
+    if(e.ctrlKey||e.metaKey||e.altKey)return;
+    let segs=segsFromValue(el.value);
+    const fullSel=el.selectionStart===0&&el.selectionEnd===el.value.length&&el.value.length>0;
+    if(fullSel)segs=lens.map(()=>'');
+    let[idx,within]=segAt(fullSel?0:el.selectionStart,segs);
+    if(/^[0-9]$/.test(e.key)){
+      e.preventDefault();
+      const fresh=segs[idx].length===0;
+      if(segs[idx].length>=lens[idx]){if(idx<segs.length-1){idx++;within=0;}else return;}
+      segs[idx]=segs[idx].slice(0,within)+e.key+segs[idx].slice(within);
+      if(segs[idx].length>lens[idx])segs[idx]=segs[idx].slice(0,lens[idx]);
+      within++;
+      let nidx=idx,nwithin=within;
+      if(((jumpFirst[idx]&&fresh)||segs[idx].length>=lens[idx])&&idx<segs.length-1){nidx=idx+1;nwithin=0;}
+      setVal(segs,nidx,nwithin);
+    }else if(e.key==='Backspace'){
+      e.preventDefault();
+      if(fullSel){setVal(segs,0,0);return;}
+      if(within>0){segs[idx]=segs[idx].slice(0,within-1)+segs[idx].slice(within);within--;}
+      else if(idx>0){idx--;within=segs[idx].length;if(within>0){segs[idx]=segs[idx].slice(0,within-1);within--;}}
+      setVal(segs,idx,within);
+    }else if(e.key===':'){
+      e.preventDefault();
+      if(idx<segs.length-1){const c=caretFor(segs,idx+1,0);el.setSelectionRange(c,c);}
+    }else if(['ArrowLeft','ArrowRight','Home','End','Tab','Shift'].includes(e.key)){
+      /* navegación nativa permitida */
+    }else{
+      e.preventDefault();
+    }
+  });
+  el.addEventListener('paste',e=>{
+    e.preventDefault();
+    const raw=((e.clipboardData||window.clipboardData).getData('text')||'').replace(/\D/g,'');
+    const segs=lens.map(()=>'');let p=0;
+    for(let i=0;i<lens.length&&p<raw.length;i++){const take=Math.min(lens[i],raw.length-p);segs[i]=raw.slice(p,p+take);p+=take;}
+    setVal(segs,lens.length-1,segs[lens.length-1].length);
+  });
+}
+
 /* ===== Configuración aplicada ===== */
 const CFG={date:CONFIG.fecha||'2027-05-09',time:CONFIG.hora||'06:00',confirmed:!!CONFIG.fechaConfirmada,name:CONFIG.nombreEvento||'',
   ig:CONFIG.instagram||'',wa:CONFIG.whatsapp||'',club:CONFIG.stravaClub||'',event:CONFIG.stravaEvento||'',reg:CONFIG.inscripcion||'',code:CONFIG.codigoDescuento||'',
@@ -755,6 +804,10 @@ $('leadForm').addEventListener('submit',async e=>{
   $('raceWhen').textContent=`${fmtDate(rd)} · ${clockAt(0)}`;$('raceLeft').textContent=days>0?`Faltan ${days} días`:'';$('datePending').hidden=CFG.confirmed;
   if(CFG.name)$('evName').textContent=' · '+CFG.name;
   fillRoutes();toggleBoxes();quick();
+  clockMask('quickPace',[2,2],[true,false]);
+  clockMask('rEasy',[2,2],[true,false]);
+  clockMask('rGoalPace',[2,2],[true,false]);
+  clockMask('rRcTime',[2,2,2],[true,false,false]);
   const saved=store.get();
   if(saved){const r=compute(saved);if(!r.errs){PROFILE=saved;R=r;writeForm(saved);renderDash();$('resumeBtn').hidden=false;$('nav-plan').disabled=false;}}
 })();
