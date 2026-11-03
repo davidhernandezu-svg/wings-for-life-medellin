@@ -1,636 +1,636 @@
-<!DOCTYPE html>
-<html lang="es" class="dark">
+<!doctype html>
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wings for Life - Hub de Entrenamiento y Estrategia</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#fff7ed',
-                            100: '#ffedd5',
-                            500: '#f97316',
-                            600: '#ea580c',
-                            700: '#c2410c',
-                            900: '#7c2d12',
-                            dark: '#0f172a',
-                            card: '#1e293b',
-                            accent: '#06b6d4'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Lucide Icons con respaldo -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; }
-        .glow-orange { box-shadow: 0 0 25px rgba(249, 115, 22, 0.3); }
-        .glow-cyan { box-shadow: 0 0 25px rgba(6, 182, 212, 0.3); }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Calcula tu ritmo frente al Catcher Car, elige tu ruta en Medellín y recibe tu plan de entrenamiento con Mariana Carmona y Vibras Run Club.">
+<title>Vibras Catcher Car</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: banda de largada arriba (franja de persecución), luego columna de formulario + columna de resultados; una sola columna en teléfono */
+:root{
+  --bg:#EEF1F5; --surface:#FFFFFF; --ink:#121722; --muted:#586172; --line:#D5DBE4;
+  --accent:#E0342A; --accent-ink:#FFFFFF; --soft:#FBE3E1; --ok:#1C7A55; --okbg:#DDF2E8; --warn:#9A6400; --warnbg:#FBEFD5; --bad:#B42318; --badbg:#FDE4E1;
+  --road:#1B2130; --road-ink:#F2F4F8;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D1118; --surface:#151B26; --ink:#E7EBF2; --muted:#98A2B3; --line:#283142;
+  --accent:#FF5B4F; --accent-ink:#1A0B0A; --soft:#3A1C1B; --ok:#5BD49A; --okbg:#12301F; --warn:#F3B94D; --warnbg:#33270D; --bad:#FF8A80; --badbg:#3A1715;
+  --road:#05070B; --road-ink:#E7EBF2; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1118; --surface:#151B26; --ink:#E7EBF2; --muted:#98A2B3; --line:#283142;
+  --accent:#FF5B4F; --accent-ink:#1A0B0A; --soft:#3A1C1B; --ok:#5BD49A; --okbg:#12301F; --warn:#F3B94D; --warnbg:#33270D; --bad:#FF8A80; --badbg:#3A1715;
+  --road:#05070B; --road-ink:#E7EBF2; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--accent)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* Banda de largada */
+.hero{background:var(--road);color:var(--road-ink)}
+.hero .wrap{padding-block:28px 22px;display:grid;gap:18px}
+.club{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.8;display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between}
+.hero h1{font-family:var(--display);font-weight:900;font-size:clamp(44px,8vw,88px);line-height:.9;margin:0;letter-spacing:.01em;text-transform:uppercase;text-wrap:balance}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{margin:0;max-width:62ch;opacity:.86}
+.racebar{display:flex;flex-wrap:wrap;gap:8px 22px;font-family:var(--mono);font-size:13px}
+.racebar b{color:var(--accent)}
+.lane{position:relative;height:34px;border-top:2px dashed rgba(255,255,255,.25);border-bottom:2px dashed rgba(255,255,255,.25);overflow:hidden}
+.lane .runner,.lane .car{position:absolute;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:11px;font-weight:700;padding:3px 8px;border-radius:3px;white-space:nowrap}
+.lane .runner{background:var(--road-ink);color:var(--road);left:62%}
+.lane .car{background:var(--accent);color:var(--accent-ink);left:8%}
+@media (prefers-reduced-motion:no-preference){
+  .lane .car{animation:chase 7s ease-in-out infinite alternate}
+}
+@keyframes chase{from{left:4%}to{left:46%}}
+
+.adminbar{display:flex;justify-content:flex-end;padding-block:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:6px;padding:11px 16px;font-weight:600;cursor:pointer;text-decoration:none;line-height:1.2}
+.btn-primary{background:var(--accent);color:var(--accent-ink)}
+.btn-line{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.btn-line:hover{border-color:var(--ink)}
+.btn[disabled],.btn[aria-disabled="true"]{opacity:.5;cursor:not-allowed}
+
+main.wrap{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:24px;padding-block:18px 48px;align-items:start}
+@media (max-width:900px){main.wrap{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:16px;min-width:0}
+.formcol{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+@media (max-width:900px){.formcol{position:static}}
+h2{font-family:var(--display);font-weight:800;font-size:30px;line-height:1;margin:0;text-transform:uppercase;letter-spacing:.02em}
+h3{font-size:15px;margin:0;font-weight:700}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.note{font-size:13px;color:var(--muted)}
+.field{display:grid;gap:6px}
+.field label,.legend{font-size:13px;font-weight:600}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+input[type=text],input[type=number],input[type=email],input[type=tel],input[type=date],input[type=time],input[type=url],select{width:100%;min-width:0;padding:10px 11px;border:1.5px solid var(--line);border-radius:6px;background:var(--bg)}
+input:focus,select:focus{border-color:var(--accent);outline:none}
+.seg{display:flex;flex-wrap:wrap;border:1.5px solid var(--line);border-radius:6px;overflow:hidden}
+.seg label{flex:1 1 auto;text-align:center;padding:9px 6px;cursor:pointer;font-size:13px;font-weight:600;border-right:1px solid var(--line);position:relative}
+.seg label:last-child{border-right:0}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label:has(input:checked){background:var(--ink);color:var(--bg)}
+.seg label:has(input:focus-visible){outline:3px solid var(--accent);outline-offset:-3px}
+.sample{font-size:12px;background:var(--warnbg);color:var(--warn);padding:6px 10px;border-radius:5px}
+.err{font-size:13px;color:var(--bad)}
+
+.results{display:grid;gap:20px;min-width:0}
+.big{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.stat{border-left:3px solid var(--line);padding:4px 0 4px 12px;min-width:0}
+.stat.key{border-left-color:var(--accent)}
+.stat .v{font-family:var(--display);font-weight:800;font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.stat .u{font-size:13px;color:var(--muted)}
+.chip{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:.02em}
+.chip.ok{background:var(--okbg);color:var(--ok)} .chip.warn{background:var(--warnbg);color:var(--warn)} .chip.bad{background:var(--badbg);color:var(--bad)} .chip.neutral{background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.panel>*,.results>*,.cta>*{min-width:0}
+.chart{width:100%;overflow-x:auto}
+.chart svg{display:block;width:100%;height:auto;min-width:420px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tablewrap{overflow-x:auto}
+.tactics{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.tactics li{display:grid;grid-template-columns:28px 1fr;gap:8px}
+.tactics li span{font-family:var(--mono);font-weight:700;color:var(--accent)}
+.week{border:1px solid var(--line);border-radius:8px}
+.week summary{cursor:pointer;padding:10px 12px;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;list-style:none}
+.week summary::-webkit-details-marker{display:none}
+.week summary .wk{font-family:var(--display);font-weight:800;font-size:20px;min-width:62px}
+.week[open] summary{border-bottom:1px solid var(--line)}
+.sess{display:grid;grid-template-columns:44px minmax(0,1fr);gap:4px 10px;padding:10px 12px;border-bottom:1px dashed var(--line)}
+.sess:last-child{border-bottom:0}
+.sess .d{font-family:var(--mono);font-weight:700}
+.z{font-family:var(--mono);font-size:11px;font-weight:700;padding:1px 6px;border-radius:3px;background:var(--bg);border:1px solid var(--line);margin-left:6px}
+.weeks{display:grid;gap:8px}
+.routes{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.route{border:1px solid var(--line);border-radius:8px;padding:14px;display:grid;gap:8px;align-content:start;min-width:0}
+.route .tags{display:flex;flex-wrap:wrap;gap:6px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:13px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.cta{background:var(--road);color:var(--road-ink);border-radius:10px;padding:22px;display:grid;gap:14px}
+.cta h2{color:var(--road-ink)}
+.cta input{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.25);color:var(--road-ink)}
+.cta .note{color:var(--road-ink);opacity:.75}
+.check{display:grid;grid-template-columns:20px 1fr;gap:8px;font-size:13px;align-items:start}
+.check input{margin-top:3px}
+.pending{font-size:12px;font-family:var(--mono);color:var(--warn)}
+.toast{padding:10px 12px;border-radius:6px;font-size:14px}
+.toast.ok{background:var(--okbg);color:var(--ok)} .toast.bad{background:var(--badbg);color:var(--bad)}
+.admin{border:2px solid var(--accent)}
+.leads td{font-size:13px}
+footer.wrap{padding-block:0 40px;font-size:12px;color:var(--muted);display:grid;gap:6px}
+footer h3{font-size:13px;color:var(--ink)}
+</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+<body>
 
-    <!-- Modal de Alerta -->
-    <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
-            <h3 id="modal-title" class="text-xl font-bold mb-2 text-white">Aviso</h3>
-            <p id="modal-message" class="text-slate-300 text-sm mb-6 leading-relaxed">Mensaje de notificación.</p>
-            <div class="flex justify-end">
-                <button onclick="closeModal()" class="px-5 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-semibold rounded-xl transition duration-200">
-                    Entendido
-                </button>
-            </div>
-        </div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="club"><span>Vibras Run Club · Head coach Mariana Carmona</span><span id="evName">App Run · Medellín</span></div>
+    <h1>Corre antes de que te <em>alcance el auto</em></h1>
+    <p>Calcula tu ritmo frente al Catcher Car, elige tu ruta en Medellín y recibe un plan de entrenamiento hasta el día de la carrera.</p>
+    <div class="racebar"><span>Largada: <b id="raceWhen">dom 9 may 2027 · 6:00 a. m.</b></span><span id="raceLeft"></span><span class="pending" id="datePending">Fecha y hora pendientes de confirmación oficial</span></div>
+    <div class="lane" aria-hidden="true"><span class="car">CATCHER CAR</span><span class="runner">TÚ</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <form class="panel formcol" id="calc" novalidate>
+    <div><div class="eyebrow">Paso 1</div><h2>Tus datos</h2></div>
+    <div class="sample" id="sampleNote">Datos de ejemplo. Cámbialos por los tuyos.</div>
+    <div class="row2">
+      <div class="field"><label for="age">Edad</label><input id="age" type="number" min="18" max="85" value="34" inputmode="numeric"></div>
+      <div class="field"><label for="weight">Peso (kg)</label><input id="weight" type="number" min="35" max="200" step="0.5" value="68" inputmode="decimal"></div>
     </div>
-
-    <!-- Header Principal -->
-    <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-40">
-        <div class="max-w-[96rem] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="bg-gradient-to-tr from-orange-600 to-amber-500 p-2.5 rounded-2xl glow-orange text-white font-bold">
-                    WFL
-                </div>
-                <div>
-                    <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-white">
-                        WINGS 4 LIFE 
-                    </h1>
-                    <p class="text-xs text-slate-400 font-medium">Corre por los que no pueden • Mariana Carmona</p>
-                </div>
-            </div>
-
-            <div class="flex items-center bg-slate-800/90 p-1.5 rounded-2xl border border-slate-700/60 shadow-inner">
-                <button onclick="switchRole('coach')" id="btn-role-coach" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center space-x-2 bg-orange-600 text-white shadow-md">
-                    <span>Entrenador</span>
-                </button>
-                <button onclick="switchRole('athlete')" id="btn-role-athlete" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center space-x-2 text-slate-400 hover:text-white">
-                    <span>Atleta</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Contenido Principal -->
-    <main class="flex-grow max-w-[96rem] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-        <!-- VISTA ENTRENADOR -->
-        <div id="view-coach" class="space-y-8">
-            <div class="bg-gradient-to-r from-slate-900 via-slate-900 to-orange-950 border border-orange-500/20 rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-xl">
-                <div class="max-w-4xl">
-                    <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-orange-500/10 text-orange-400 border border-orange-500/20 mb-4">
-                        Panel de Control Maestro
-                    </span>
-                    <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-3">
-                        Gestiona Claves y Planes Personalizados
-                    </h2>
-                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-                        Crea códigos únicos de entrenamiento para compartir con tus atletas. Diseña estrategias basadas en ritmos específicos para superar la persecución del <span class="text-orange-500 font-semibold">Catcher Car</span>.
-                    </p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
-                <!-- Columna Izquierda: Generador de Claves -->
-                <div class="xl:col-span-4 space-y-6">
-                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
-                        <h3 class="text-lg font-bold text-white mb-4">Crear Clave de Atleta</h3>
-                        <form id="form-create-key" onsubmit="handleCreateKey(event)" class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Nombre del Atleta</label>
-                                <input type="text" id="athlete-name" required placeholder="Ej. Carlos Mendoza" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-orange-500 transition">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Clave de Acceso (Código)</label>
-                                <div class="flex space-x-2">
-                                    <input type="text" id="athlete-code" required placeholder="Ej. WINGS2026-CM" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-orange-500 transition uppercase font-mono">
-                                    <button type="button" onclick="generateRandomCode()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 rounded-xl border border-slate-700 transition">🔄</button>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Peso Actual (kg)</label>
-                                <input type="number" id="athlete-weight" required min="35" max="150" value="70" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-orange-500 transition">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Ritmo Actual (min/km)</label>
-                                <input type="text" id="athlete-pace" required placeholder="Ej. 5:30" value="5:30" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-orange-500 transition">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Nivel de Experiencia</label>
-                                <select id="athlete-level" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-orange-500 transition">
-                                    <option value="Principiante">Principiante (Corre esporádicamente)</option>
-                                    <option value="Intermedio" selected>Intermedio (Corre regularmente)</option>
-                                    <option value="Avanzado">Avanzado (Alto kilometraje semanal)</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-semibold py-3 rounded-xl transition duration-200 shadow-lg shadow-orange-600/20">
-                                Emitir Clave y Plan
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Columna Derecha: Lista de Atletas y Simulador -->
-                <div class="xl:col-span-8 space-y-6">
-                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-lg font-bold text-white">Atletas y Claves Emitidas</h3>
-                            <span id="athletes-count" class="text-xs px-2.5 py-1 bg-slate-800 text-slate-300 rounded-full font-semibold">1 Atletas</span>
-                        </div>
-                        <div id="coach-athletes-list" class="space-y-4"></div>
-                    </div>
-
-                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
-                        <h3 class="text-lg font-bold text-white mb-4">Calculadora de Catcher Car & Estrategia Global</h3>
-                        <p class="text-slate-400 text-xs mb-4">Ingresa un ritmo de prueba para calcular al instante el tiempo y distancia de captura oficial.</p>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Ritmo de Prueba (min/km)</label>
-                                <input type="text" id="sim-pace-input" value="5:30" oninput="runQuickSimulator()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500 transition">
-                            </div>
-                            <div class="flex items-end">
-                                <div class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 flex justify-between items-center">
-                                    <span class="text-xs text-slate-400 font-medium">Meta Estimada:</span>
-                                    <span id="sim-result-km" class="text-cyan-400 font-extrabold text-base">17.15 km</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="sim-breakdown" class="text-xs text-slate-400 bg-slate-950/60 p-3 rounded-xl border border-slate-800/80">
-                            Serás alcanzado a los <span class="text-white font-semibold">17.15 km</span> en un tiempo total de carrera de <span class="text-white font-semibold">1h 34m</span>.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- VISTA ATLETA -->
-        <div id="view-athlete" class="space-y-8 hidden">
-            <div id="athlete-login-card" class="max-w-xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
-                <div class="text-center space-y-3">
-                    <h2 class="text-2xl font-bold text-white">Acceso o Inscripción de Atleta</h2>
-                    <p class="text-slate-400 text-sm">Ingresa tu clave de entrenador o regístrate en el club oficial para unirte.</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-800">
-                    <div class="space-y-4">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-orange-500">¿Ya tienes clave?</h3>
-                        <form onsubmit="handleAthleteLogin(event)" class="space-y-3">
-                            <input type="text" id="login-code-input" required placeholder="Ej. WINGS2026-CM" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white uppercase font-mono text-center tracking-wider focus:outline-none focus:border-orange-500 transition">
-                            <button type="submit" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-semibold py-2.5 rounded-xl transition text-sm shadow-md">
-                                Cargar Mi Plan
-                            </button>
-                        </form>
-                    </div>
-
-                    <div class="space-y-4 border-t md:border-t-0 md:border-l border-slate-800 pt-4 md:pt-0 md:pl-6 flex flex-col justify-between">
-                        <div class="space-y-2">
-                            <h3 class="text-xs font-bold uppercase tracking-wider text-cyan-400">Únete al Club</h3>
-                            <p class="text-xs text-slate-300 leading-relaxed">
-                                Es obligatorio registrarte en el grupo de <strong class="text-white">Mariana Carmona</strong> para participar oficialmente.
-                            </p>
-                        </div>
-                        <button onclick="openClubModal()" class="w-full bg-gradient-to-r from-cyan-600 to-orange-600 hover:from-cyan-500 hover:to-orange-500 text-white font-bold py-2.5 rounded-xl transition text-sm shadow-md">
-                            Inscribirme al Club
-                        </button>
-                    </div>
-                </div>
-
-                <div class="text-center text-xs text-slate-500 pt-3 border-t border-slate-800">
-                    ¿Quieres probar la plataforma? <button onclick="loadDemoAthlete()" class="text-orange-500 underline font-semibold hover:text-orange-400">Cargar Demo Atleta</button>
-                </div>
-            </div>
-
-            <!-- Dashboard Atleta -->
-            <div id="athlete-dashboard" class="space-y-8 hidden">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex items-center justify-between">
-                        <div>
-                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Atleta</span>
-                            <h3 id="dash-athlete-title" class="text-lg font-bold text-white">Atleta</h3>
-                            <span id="dash-athlete-level" class="text-xs text-orange-500 font-semibold">Nivel</span>
-                        </div>
-                        <button onclick="logoutAthlete()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2 rounded-xl border border-slate-700 transition text-xs">Salir</button>
-                    </div>
-
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Tu Ritmo Base</span>
-                        <div id="metric-pace" class="text-xl font-black text-white">5:30 <span class="text-xs font-normal text-slate-400">min/km</span></div>
-                        <span class="text-xs text-slate-500">Peso: <strong id="metric-weight" class="text-slate-300">70 kg</strong></span>
-                    </div>
-
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Meta Catcher Car</span>
-                        <div id="metric-target-km" class="text-xl font-black text-cyan-400">16.32 km</div>
-                        <span class="text-xs text-slate-500">Proyección estimada</span>
-                    </div>
-
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Entrenamientos</span>
-                        <div id="metric-completed-workouts" class="text-xl font-black text-emerald-400">0 / 12</div>
-                        <span class="text-xs text-slate-500">Completados</span>
-                    </div>
-                </div>
-
-                <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-4">
-                    <button onclick="switchAthleteTab('plan')" id="tab-btn-plan" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition bg-orange-600 text-white shadow-md">Plan de 4 Semanas</button>
-                    <button onclick="switchAthleteTab('simulator')" id="tab-btn-simulator" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition text-slate-400 hover:text-white bg-slate-900 border border-slate-800">Simulador Catcher Car Pro</button>
-                    <button onclick="switchAthleteTab('strategy')" id="tab-btn-strategy" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition text-slate-400 hover:text-white bg-slate-900 border border-slate-800">Estrategia & Nutrición</button>
-                    <button onclick="switchAthleteTab('advanced')" id="tab-btn-advanced" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition text-cyan-400 hover:text-cyan-300 bg-cyan-950/30 border border-cyan-500/30">Plan Avanzado Club</button>
-                </div>
-
-                <div id="athlete-tab-plan" class="space-y-6">
-                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                            <div>
-                                <h3 class="text-xl font-bold text-white">Tu Plan de Entrenamiento Personalizado</h3>
-                                <p class="text-slate-400 text-xs mt-1">Generado automáticamente según tu capacidad, peso y ritmo.</p>
-                            </div>
-                            <div class="flex space-x-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800">
-                                <button onclick="selectWeek(1)" id="week-btn-1" class="px-4 py-1.5 rounded-xl text-xs font-bold bg-orange-600 text-white transition">Semana 1</button>
-                                <button onclick="selectWeek(2)" id="week-btn-2" class="px-4 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition">Semana 2</button>
-                                <button onclick="selectWeek(3)" id="week-btn-3" class="px-4 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition">Semana 3</button>
-                                <button onclick="selectWeek(4)" id="week-btn-4" class="px-4 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition">Semana 4 (Pico)</button>
-                            </div>
-                        </div>
-                        <div id="workout-sessions-list" class="space-y-4"></div>
-                    </div>
-                </div>
-
-                <div id="athlete-tab-simulator" class="space-y-6 hidden">
-                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
-                        <h3 class="text-xl font-bold text-white mb-2">Simulador Oficial Catcher Car (Wings for Life)</h3>
-                        <p class="text-slate-400 text-sm mb-6">El auto meta arranca 30 minutos después de la salida a <span class="text-white font-semibold">15 km/h</span> y acelera progresivamente.</p>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800">
-                                <span class="block text-xs font-semibold text-slate-400 uppercase mb-2">Tu Ritmo Constante</span>
-                                <input type="text" id="pro-sim-pace" value="5:30" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-lg font-bold text-white focus:outline-none focus:border-cyan-500">
-                            </div>
-                            <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
-                                <span class="block text-xs font-semibold text-slate-400 uppercase mb-1">Distancia de Captura</span>
-                                <div class="text-3xl font-black text-cyan-400" id="pro-sim-km">16.32 km</div>
-                                <span class="text-xs text-slate-500" id="pro-sim-time">A los 1h 29m de carrera</span>
-                            </div>
-                            <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col justify-center">
-                                <button onclick="calculateProSimulator()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-3 rounded-xl transition">Actualizar Simulación</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="athlete-tab-strategy" class="space-y-6 hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-                            <h3 class="text-lg font-bold text-white">Estrategia de Ritmo Wings for Life</h3>
-                            <p class="text-slate-300 text-sm leading-relaxed">Inicia un 5-10% más conservador durante los primeros 45 minutos para evitar picos prematuros de lactato.</p>
-                        </div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-                            <h3 class="text-lg font-bold text-white">Hidratación y Nutrición</h3>
-                            <p class="text-slate-300 text-sm leading-relaxed">Consume 30-45g de carbohidratos por hora a partir del kilómetro 10 en cada estación.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="athlete-tab-advanced" class="space-y-6 hidden">
-                    <div class="bg-slate-900 border border-cyan-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl">
-                        <h3 class="text-2xl font-bold text-white tracking-tight">Plan de Entrenamiento Personalizado Avanzado</h3>
-                        <p class="text-slate-300 text-sm sm:text-base leading-relaxed mt-2">Obtén un programa ultra-personalizado con precio preferencial exclusivo para miembros del Club Mariana Carmona.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Modal Registro Club -->
-    <div id="club-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden">
-        <div class="bg-slate-900 border border-cyan-500/30 rounded-3xl p-6 sm:p-8 max-w-lg w-full mx-4 shadow-2xl relative">
-            <div class="flex justify-between items-start mb-6">
-                <h3 class="text-2xl font-bold text-white">Club Wings for Life • Mariana Carmona</h3>
-                <button onclick="closeClubModal()" class="text-slate-400 hover:text-white p-2">✕</button>
-            </div>
-            <form onsubmit="handleClubRegistration(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Nombre y Apellido</label>
-                    <input type="text" id="club-reg-name" required placeholder="Ej. Camila Torres" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Correo Electrónico</label>
-                    <input type="email" id="club-reg-email" required placeholder="camila@example.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">WhatsApp de Contacto</label>
-                    <input type="tel" id="club-reg-phone" required placeholder="+57 300 9876543" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Nivel</label>
-                    <select id="club-reg-level" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white">
-                        <option value="Principiante">Principiante</option>
-                        <option value="Intermedio">Intermedio</option>
-                        <option value="Avanzado">Avanzado</option>
-                    </select>
-                </div>
-                <button type="submit" class="w-full bg-gradient-to-r from-cyan-600 to-orange-600 text-white font-bold py-3 rounded-xl">Completar Inscripción</button>
-            </form>
-        </div>
+    <div class="field"><span class="legend" id="sxL">Sexo</span>
+      <div class="seg" role="radiogroup" aria-labelledby="sxL">
+        <label><input type="radio" name="sex" id="sxF" value="F" checked>Mujer</label>
+        <label><input type="radio" name="sex" id="sxM" value="M">Hombre</label>
+      </div></div>
+    <div class="field"><span class="legend" id="lvlL">Nivel de entrenamiento</span>
+      <div class="seg" role="radiogroup" aria-labelledby="lvlL">
+        <label><input type="radio" name="level" id="lvP" value="Principiante">Principiante</label>
+        <label><input type="radio" name="level" id="lvI" value="Intermedio" checked>Intermedio</label>
+        <label><input type="radio" name="level" id="lvA" value="Avanzado">Avanzado</label>
+      </div></div>
+    <div class="field"><span class="legend" id="dL">Días que puedes correr por semana</span>
+      <div class="seg" role="radiogroup" aria-labelledby="dL">
+        <label><input type="radio" name="days" id="d3" value="3">3</label>
+        <label><input type="radio" name="days" id="d4" value="4" checked>4</label>
+        <label><input type="radio" name="days" id="d5" value="5">5</label>
+      </div></div>
+    <div class="field"><label for="paceKind">Tu ritmo actual (opcional)</label>
+      <select id="paceKind">
+        <option value="none" selected>No lo sé: usar el perfil del club</option>
+        <option value="race">Tengo un tiempo reciente de carrera</option>
+        <option value="easy">Sé mi ritmo cómodo de rodaje</option>
+      </select></div>
+    <p class="note" id="noneBox">Calculamos tu plan con el perfil del club para tu nivel, ajustado por tu edad, tu sexo y la distancia objetivo.</p>
+    <div class="row2" id="raceBox" hidden>
+      <div class="field"><label for="rcDist">Distancia</label><select id="rcDist"><option value="5">5 km</option><option value="10" selected>10 km</option><option value="21.0975">Media maratón</option><option value="42.195">Maratón</option></select></div>
+      <div class="field"><label for="rcTime">Tiempo (h:mm:ss)</label><input id="rcTime" type="text" value="0:55:00" inputmode="numeric" placeholder="0:55:00"></div>
     </div>
+    <div class="field" id="easyBox" hidden><label for="easyPace">Ritmo cómodo (min:seg por km)</label><input id="easyPace" type="text" value="6:45" inputmode="numeric" placeholder="6:45"></div>
 
-    <script>
-        let appState = {
-            role: 'coach',
-            athletes: [
-                {
-                    id: '1',
-                    name: 'Mateo Fernández',
-                    code: 'WINGS2026-MF',
-                    weight: 68,
-                    pace: '5:00',
-                    level: 'Avanzado',
-                    workouts: [
-                        { week: 1, day: 'Lunes', title: 'Rodaje Suave Aeróbico', desc: '8 km a ritmo conversacional (5:45 min/km)', completed: true },
-                        { week: 1, day: 'Miércoles', title: 'Intervalos de Velocidad', desc: '6x 800m a ritmo 4:30 min/km con 2 min trote suave', completed: false },
-                        { week: 2, day: 'Lunes', title: 'Recuperación Activa', desc: '6 km muy suave o natación', completed: false },
-                        { week: 3, day: 'Lunes', title: 'Rodaje Regenerativo', desc: '7 km suave', completed: false }
-                    ]
-                }
-            ],
-            currentAthlete: null,
-            selectedWeek: 1
-        };
+    <div><div class="eyebrow">Paso 2</div><h2>Tu objetivo</h2></div>
+    <div class="field"><span class="legend" id="gL">Quiero calcular</span>
+      <div class="seg" role="radiogroup" aria-labelledby="gL">
+        <label><input type="radio" name="goal" id="gD" value="dist" checked>Ritmo para una distancia</label>
+        <label><input type="radio" name="goal" id="gP" value="pace">Distancia para un ritmo</label>
+      </div></div>
+    <div class="field" id="goalDistBox"><label for="goalDist">Distancia que quiero alcanzar (km)</label><input id="goalDist" type="number" min="2" max="80" step="0.5" value="15" inputmode="decimal"></div>
+    <div class="field" id="goalPaceBox" hidden><label for="goalPace">Ritmo al que quiero correr (min:seg por km)</label><input id="goalPace" type="text" value="6:00" inputmode="numeric"></div>
+    <div class="field"><label for="raceRoute">Ruta para el día de carrera</label><select id="raceRoute"></select></div>
+    <div class="err" id="formErr" role="alert"></div>
+  </form>
 
-        window.addEventListener('DOMContentLoaded', () => {
-            renderCoachView();
-            runQuickSimulator();
-            generateRandomCode();
-        });
+  <div class="results" id="results">
+    <section class="panel" aria-labelledby="h-obj">
+      <div><div class="eyebrow">Frente al Catcher Car</div><h2 id="h-obj">Tu objetivo</h2></div>
+      <div class="big" id="objStats"></div>
+      <div class="chart" id="chaseChart" role="img" aria-label="Distancia recorrida por ti y por el Catcher Car en el tiempo"></div>
+      <p class="note">El auto sale 30 min después de la largada a 14 km/h y acelera cada 30 min: 15, 16, 17, 18, 22, 26, 30 y 34 km/h.</p>
+    </section>
 
-        function showModal(title, message, isError = false) {
-            document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-message').innerText = message;
-            document.getElementById('custom-modal').classList.remove('hidden');
-        }
+    <section class="panel" aria-labelledby="h-form">
+      <div><div class="eyebrow">Según tu forma actual</div><h2 id="h-form">¿Es alcanzable?</h2></div>
+      <div id="formStats"></div>
+    </section>
 
-        function closeModal() {
-            document.getElementById('custom-modal').classList.add('hidden');
-        }
+    <section class="panel" aria-labelledby="h-str">
+      <div><div class="eyebrow">Estrategia Catcher Car</div><h2 id="h-str">Ritmo constante</h2></div>
+      <div class="big" id="cruise"></div>
+      <ol class="tactics" id="tactics"></ol>
+      <div class="tablewrap"><table><thead><tr><th>Paso</th><th class="n">Reloj</th><th class="n">Tiempo</th><th class="n">Auto en</th><th class="n">Ventaja</th></tr></thead><tbody id="splits"></tbody></table></div>
+    </section>
 
-        function switchRole(role) {
-            appState.role = role;
-            const btnCoach = document.getElementById('btn-role-coach');
-            const btnAthlete = document.getElementById('btn-role-athlete');
-            const viewCoach = document.getElementById('view-coach');
-            const viewAthlete = document.getElementById('view-athlete');
+    <section class="panel" aria-labelledby="h-z">
+      <div><div class="eyebrow">Método VDOT de Daniels</div><h2 id="h-z">Tus ritmos de entrenamiento</h2></div>
+      <div id="zones"></div>
+    </section>
 
-            if (role === 'coach') {
-                btnCoach.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center space-x-2 bg-orange-600 text-white shadow-md';
-                btnAthlete.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center space-x-2 text-slate-400 hover:text-white';
-                viewCoach.classList.remove('hidden');
-                viewAthlete.classList.add('hidden');
-                renderCoachView();
-            } else {
-                btnAthlete.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center space-x-2 bg-orange-600 text-white shadow-md';
-                btnCoach.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center space-x-2 text-slate-400 hover:text-white';
-                viewAthlete.classList.remove('hidden');
-                viewCoach.classList.add('hidden');
-                
-                if (appState.currentAthlete) {
-                    renderAthleteDashboard();
-                } else {
-                    document.getElementById('athlete-login-card').classList.remove('hidden');
-                    document.getElementById('athlete-dashboard').classList.add('hidden');
-                }
-            }
-        }
+    <section class="panel" aria-labelledby="h-nut">
+      <div><div class="eyebrow">Según tu peso</div><h2 id="h-nut">Combustible e hidratación</h2></div>
+      <div id="nutrition"></div>
+    </section>
 
-        function generateRandomCode() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let code = 'WINGS2026-';
-            for (let i = 0; i < 4; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            document.getElementById('athlete-code').value = code;
-        }
+    <section class="panel" aria-labelledby="h-plan">
+      <div><div class="eyebrow">Plan semipersonalizado</div><h2 id="h-plan">Semana a semana</h2></div>
+      <div id="planSum"></div>
+      <div class="weeks" id="weeks"></div>
+    </section>
 
-        function paceToSeconds(paceStr) {
-            const parts = paceStr.trim().split(':');
-            if (parts.length !== 2) return 330;
-            const mins = parseInt(parts[0]) || 5;
-            const secs = parseInt(parts[1]) || 30;
-            return mins * 60 + secs;
-        }
+    <section class="panel" aria-labelledby="h-r">
+      <div><div class="eyebrow">Altimetría tomada de segmentos de Strava</div><h2 id="h-r">Rutas en Medellín</h2></div>
+      <div class="routes" id="routes"></div>
+      <p class="note">Los segmentos citados son de ciclismo: el terreno y la altimetría son los mismos para correr; los tiempos de esas tablas no aplican. El margen se calcula para tu ritmo de crucero.</p>
+    </section>
 
-        function calculateCatcherCarDistance(paceStr) {
-            const runnerSecPerKm = paceToSeconds(paceStr);
-            let timeElapsedSeconds = 1800;
-            let distance = 0;
-            while (true) {
-                let hoursFromStart = timeElapsedSeconds / 3600;
-                let carSpeedKmH = 15;
-                if (hoursFromStart >= 4) carSpeedKmH = 20;
-                else if (hoursFromStart >= 3) carSpeedKmH = 18;
-                else if (hoursFromStart >= 2) carSpeedKmH = 17;
-                else if (hoursFromStart >= 1) carSpeedKmH = 16;
+    <section class="panel" aria-labelledby="h-c">
+      <div><div class="eyebrow">Comunidad</div><h2 id="h-c">Consejos y Strava</h2></div>
+      <p>Mariana publica sus consejos de entrenamiento y alimentación en Instagram.</p>
+      <div class="actions" id="community"></div>
+      <p class="note">La conexión de tus métricas de Strava llega en una segunda fase, cuando Strava apruebe la aplicación para más atletas.</p>
+    </section>
 
-                let runnerCurrentKm = timeElapsedSeconds / runnerSecPerKm;
-                let carCurrentKm = (carSpeedKmH / 3600) * (timeElapsedSeconds - 1800);
+    <section class="cta" aria-labelledby="h-cta">
+      <div><div class="eyebrow" style="color:inherit;opacity:.7">Plan personalizado</div><h2 id="h-cta">Entrena con Mariana</h2></div>
+      <p style="margin:0">Deja tus datos y Mariana te contacta para armar un plan a tu medida. Enviamos también tu perfil y tu objetivo para que llegue preparada.</p>
+      <form id="leadForm" name="plan-personalizado" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="panel" style="background:transparent;border:0;padding:0">
+        <input type="hidden" name="form-name" value="plan-personalizado"><p hidden><label>No llenar <input name="bot-field" id="botField"></label></p><input type="hidden" name="sexo"><input type="hidden" name="edad"><input type="hidden" name="peso_kg"><input type="hidden" name="nivel"><input type="hidden" name="dias_semana"><input type="hidden" name="referencia"><input type="hidden" name="vdot"><input type="hidden" name="objetivo_km"><input type="hidden" name="ritmo_minimo"><input type="hidden" name="ritmo_crucero"><input type="hidden" name="ruta"><input type="hidden" name="fecha">
+        <div class="row2">
+          <div class="field"><label for="lName">Nombre</label><input id="lName" name="nombre" type="text" autocomplete="name" required></div>
+          <div class="field"><label for="lEmail">Correo</label><input id="lEmail" name="correo" type="email" autocomplete="email" required></div>
+        </div>
+        <div class="field"><label for="lPhone">WhatsApp (opcional)</label><input id="lPhone" name="whatsapp" type="tel" autocomplete="tel"></div>
+        <label class="check"><input type="checkbox" id="lConsent" name="autorizacion" value="Sí · Ley 1581 de 2012" required><span>Autorizo a Vibras Run Club y a Mariana Carmona a tratar mis datos (contacto, edad, peso, nivel y objetivo) para contactarme sobre el plan personalizado, conforme a la Ley 1581 de 2012. Puedo pedir su corrección o eliminación en cualquier momento. Los datos se almacenan en el servicio de formularios de Netlify.</span></label>
+        <div class="actions"><button class="btn btn-primary" type="submit" id="leadBtn">Quiero que Mariana me contacte</button></div>
+        <div id="leadMsg" role="status"></div>
+      </form>
+    </section>
+  </div>
+</main>
 
-                if (carCurrentKm >= runnerCurrentKm) {
-                    distance = runnerCurrentKm;
-                    break;
-                }
-                timeElapsedSeconds += 5;
-                if (timeElapsedSeconds > 25000) {
-                    distance = timeElapsedSeconds / runnerSecPerKm;
-                    break;
-                }
-            }
-            let totalMinutes = Math.round(timeElapsedSeconds / 60);
-            let hours = Math.floor(totalMinutes / 60);
-            let minutes = totalMinutes % 60;
-            return { distance: distance.toFixed(2), timeFormatted: `${hours}h ${minutes}m` };
-        }
+<footer class="wrap">
+  <h3>Cómo se calcula</h3>
+  <p>Catcher Car: cronograma de velocidades publicado del evento (desde 2019). Ritmos y forma: fórmulas de Daniels y Gilbert (VDOT). Sin un ritmo propio se usa el perfil del club para tu nivel, ajustado con los factores de edad WMA 2025 para tu sexo y distancia (tablas de Alan Jones, aprobadas por USATF). Si das un tiempo de carrera real, se usa ese dato y no se aplica el ajuste por edad. Un ritmo cómodo se toma como el 70 % del VO₂máx y es una estimación. Combustible e hidratación: declaración conjunta de la Academy of Nutrition and Dietetics, Dietitians of Canada y el ACSM (2016). Margen por altimetría: costo energético de correr según la pendiente (Minetti et al., 2002), suponiendo mitad de la distancia en subida y mitad en bajada. Como entrenas y corres en Medellín, los ritmos ya incluyen el efecto de la altitud.</p>
+  <p>Este plan es orientativo y no reemplaza una valoración médica. Si tienes una lesión o una condición de salud, consulta antes de empezar.</p>
+</footer>
 
-        function runQuickSimulator() {
-            const pace = document.getElementById('sim-pace-input').value;
-            const res = calculateCatcherCarDistance(pace);
-            document.getElementById('sim-result-km').innerText = res.distance + ' km';
-            document.getElementById('sim-breakdown').innerHTML = `Serás alcanzado a los <span class="text-white font-semibold">${res.distance} km</span> en un tiempo total de carrera de <span class="text-white font-semibold">${res.timeFormatted}</span>.`;
-        }
+<script>
+/* ===== Núcleo de cálculo (validado en Node) ===== */
+const CAR=[[0.5,14],[1.0,15],[1.5,16],[2.0,17],[2.5,18],[3.0,22],[3.5,26],[4.0,30],[4.5,34]];
+function carPos(tH){let d=0;for(let i=0;i<CAR.length;i++){const s=CAR[i][0],v=CAR[i][1],e=i+1<CAR.length?CAR[i+1][0]:1e9;if(tH<=s)break;d+=v*(Math.min(tH,e)-s);}return d;}
+function carTimeAt(D){let lo=0.5,hi=20;for(let k=0;k<100;k++){const m=(lo+hi)/2;if(carPos(m)<D)lo=m;else hi=m;}return hi;}
+function minPaceFor(D){return carTimeAt(D)*60/D;}
+function distForPace(p){const v=60/p;let lo=0.5,hi=20;for(let k=0;k<100;k++){const m=(lo+hi)/2;if(v*m>carPos(m))lo=m;else hi=m;}return v*hi;}
+const vo2=v=>-4.60+0.182258*v+0.000104*v*v;
+const pctMax=t=>0.8+0.1894393*Math.exp(-0.012778*t)+0.2989558*Math.exp(-0.1932605*t);
+function vdotFromRace(D,tMin){return vo2(D*1000/tMin)/pctMax(tMin);}
+function vdotFromEasy(p){return vo2(1000/p)/0.70;}
+function speedForVO2(x){const a=0.000104,b=0.182258,c=-4.60-x;return(-b+Math.sqrt(b*b-4*a*c))/(2*a);}
+function paceAtPct(vd,p){return 1000/speedForVO2(vd*p);}
+function predictTime(vd,D){let lo=1,hi=1500;for(let k=0;k<100;k++){const t=(lo+hi)/2;if(vo2(D*1000/t)/pctMax(t)>vd)lo=t;else hi=t;}return hi;}
+function wflDistForVdot(vd,factor){factor=factor||1;let lo=0.5,hi=100;for(let k=0;k<100;k++){const D=(lo+hi)/2,t=carTimeAt(D)*60,need=D*1000/t*factor,can=speedForVO2(vd*pctMax(t));if(can>=need)lo=D;else hi=D;}return lo;}
+const cr=i=>155.4*i**5-30.4*i**4-43.3*i**3+46.3*i**2+19.5*i+3.6;
+/* ruta: {dist km, gain m, net m, loop bool}. Si no es circuito se modela ida y vuelta. */
+function routeFactor(r){let D=r.dist,G=r.gain,N=r.net||0;if(!r.loop){G=G+(G-N);D=D*2;N=0;}const half=D*1000/2;return((cr(G/half)+cr(-(G-N)/half))/2)/3.6;}
+function routeGainPerKm(r){return r.loop?r.gain/r.dist:(2*r.gain-(r.net||0))/(2*r.dist);}
+function marginSec(p,f){return p*(f-1)*60;}
 
-        function generateDynamicPlan(level, pace) {
-            return [
-                { week: 1, day: 'Lunes', title: 'Rodaje Aeróbico Suave', desc: `6 a 8 km a ritmo (${pace})`, completed: false },
-                { week: 1, day: 'Miércoles', title: 'Intervalos', desc: '5x 800m fuerte', completed: false },
-                { week: 2, day: 'Lunes', title: 'Recuperación Activa', desc: '5 km suave', completed: false },
-                { week: 3, day: 'Lunes', title: 'Tirada Larga', desc: '12 km constantes', completed: false }
-            ];
-        }
+/* ===== Plan semipersonalizado (método VDOT de Daniels) ===== */
+const LEVEL={
+  Principiante:{long0:40,easy:30,longCap:120},
+  Intermedio:{long0:60,easy:40,longCap:150},
+  Avanzado:{long0:80,easy:50,longCap:150}
+};
+const DAYS={3:['Mar','Jue','Dom'],4:['Mar','Mié','Vie','Dom'],5:['Mar','Mié','Jue','Sáb','Dom']};
+function nextMonday(d){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());const wd=x.getDay();const add=wd===1?0:((8-wd)%7);x.setDate(x.getDate()+add);return x;}
+function buildPlan(o){
+  // o: {start Date, race Date, level, days, vdot|null, raceMin, hasTest}
+  const mon=nextMonday(o.start);
+  const W=Math.floor((o.race-mon)/(7*864e5))+1; // la última semana contiene la carrera
+  if(W<1)return{weeks:[],W:0,mon};
+  const L=LEVEL[o.level];
+  const taper=W>=10?2:1;
+  const spec=Math.min(4,Math.max(0,Math.floor((W-taper)/3)));
+  const build=Math.min(5,Math.max(0,Math.floor((W-taper-spec)/2)));
+  const base=W-taper-spec-build;
+  const longPeak=Math.max(L.long0,Math.min(L.longCap,Math.round(o.raceMin*0.85/5)*5));
+  const tests=new Set();
+  const weeks=[];const progW=W-taper;
+  for(let w=1;w<=W;w++){
+    const phase=w<=base?'Base':w<=base+build?'Desarrollo':w<=base+build+spec?'Específica':'Afinamiento';
+    const cut=(phase!=='Afinamiento'&&w%4===0&&w<progW);
+    let f=progW>1?Math.min(1,(w-1)/Math.max(1,progW-2)):1;
+    let long=L.long0+(longPeak-L.long0)*f;
+    let easy=L.easy*(1+0.3*f);
+    if(cut){long*=0.8;easy*=0.8;}
+    if(phase==='Afinamiento'){const k=W-w;long=longPeak*(k>=1?0.6:0);easy=L.easy*(k>=1?0.8:0.6);}
+    long=Math.round(long/5)*5;easy=Math.round(easy/5)*5;
+    const s=sessionsFor({w,W,phase,cut,long,easy,level:o.level,days:o.days,test:tests.has(w),hasVdot:!!o.vdot});
+    weeks.push({w,phase,cut,date:new Date(mon.getTime()+(w-1)*7*864e5),sessions:s});
+  }
+  return{weeks,W,mon,phases:{base,build,spec,taper},longPeak};
+}
+function sessionsFor(c){
+  const day=DAYS[c.days];const out=[];
+  const last=c.w===c.W;
+  const q1=qualityOne(c),q2=qualityTwo(c);
+  const easy={t:'Rodaje suave',z:'E',min:c.easy,route:'ciudad',d:`${c.easy} min continuos a ritmo E, conversacional.`};
+  const long={t:'Tirada larga',z:'E',min:c.long,route:'pdr',d:longDesc(c)};
+  let list;
+  if(c.days===3)list=[q1,easy,long];
+  else if(c.days===4)list=[q1,easy,(c.level==='Principiante'?easy:q2),long];
+  else list=[q1,easy,q2,(c.level==='Avanzado'&&c.phase==='Base'&&c.w%2===0?{t:'Fuerza en subida',z:'E',min:c.easy+15,route:'palmas',d:`Subida continua por Las Palmas a esfuerzo E/umbral bajo (${c.easy+15} min totales); bajada caminando o trotando muy suave.`}:easy),long];
+  if(last){
+    list=list.map((s,i)=>i===list.length-1?{t:'Día de carrera',z:'Carrera',min:0,route:'race',d:'Salida a la hora oficial. Ritmo de crucero constante según tu estrategia frente al Catcher Car.'}:(i===0?{t:'Activación',z:'E',min:30,route:'ciudad',d:'25 min suaves + 4 aceleraciones de 20 s a ritmo de carrera.'}:{...easy,min:Math.min(easy.min,25),d:'Rodaje muy suave, piernas frescas.'}));
+  }
+  return list.map((s,i)=>({...s,day:day[i]}));
+}
+function qualityOne(c){
+  if(c.phase==='Afinamiento')return{t:'Recordatorio de ritmo',z:'T',min:40,route:'aero',d:c.hasVdot?'15 min E + 3 × 5 min a ritmo T (rec 2 min) + 10 min E.':'15 min suave + 3 × 5 min a esfuerzo fuerte-cómodo (RPE 7) + 10 min suave.'};
+  if(c.level==='Principiante'&&c.phase==='Específica')return{t:'Ritmo de carrera',z:'Crucero',min:45,route:'aero',d:'10 min suave + 3 × 6 min a tu ritmo de crucero WFL (rec 2 min suave) + 10 min suave.'};
+  if(c.level==='Principiante'){const n=c.phase==='Base'?6:c.phase==='Desarrollo'?8:10;return{t:'Fartlek',z:'T',min:35+n,route:'aero',d:`10 min suave + ${n} × 1 min ${c.hasVdot?'a ritmo T':'fuerte-cómodo (RPE 7)'} / 2 min suave + 10 min suave.`};}
+  const adv=c.level==='Avanzado';
+  if(c.phase==='Base')return{t:'Umbral (T)',z:'T',min:adv?60:50,route:'aero',d:adv?'15 min E + 4 × 1600 m a ritmo T (rec 1 min) + 10 min E.':'15 min E + 3 × 8 min a ritmo T (rec 2 min) + 10 min E.'};
+  if(c.phase==='Desarrollo')return{t:'Umbral (T)',z:'T',min:adv?70:55,route:'aero',d:adv?'15 min E + 5 × 2000 m a ritmo T (rec 1 min) + 10 min E.':'15 min E + 4 × 10 min a ritmo T (rec 2 min) + 10 min E.'};
+  return{t:'Ritmo de carrera',z:'Crucero',min:adv?75:60,route:'aero',d:adv?'15 min E + 3 × 15 min a ritmo de crucero WFL (rec 3 min E) + 10 min E.':'15 min E + 3 × 10 min a ritmo de crucero WFL (rec 3 min E) + 10 min E.'};
+}
+function qualityTwo(c){
+  if(c.phase==='Afinamiento')return{t:'Rodaje suave',z:'E',min:Math.min(c.easy,35),route:'ciudad',d:'Rodaje suave con 4 aceleraciones de 20 s.'};
+  if(c.level==='Principiante')return{t:'Cuestas cortas',z:'R',min:40,route:'nutibara',d:'15 min suave + 6 × 45 s de subida fuerte en el Nutibara, bajando al trote + 10 min suave.'};
+  const adv=c.level==='Avanzado';
+  if(c.phase==='Base')return{t:'Cuestas',z:'R',min:45,route:'nutibara',d:`15 min E + ${adv?10:8} × 60 s en subida (Nutibara) a esfuerzo fuerte, recuperación bajando + 10 min E.`};
+  return{t:'Intervalos (I)',z:'I',min:adv?60:50,route:'aero',d:adv?'15 min E + 6 × 1000 m a ritmo I (rec 3 min trote) + 10 min E.':'15 min E + 5 × 3 min a ritmo I (rec 2 min trote) + 10 min E.'};
+}
+function longDesc(c){
+  if(c.phase==='Específica')return`${c.long} min: los primeros 2/3 a ritmo E y el último tercio a ritmo de crucero WFL. Sal a las 6:00 a. m., la hora de largada.`;
+  if(c.phase==='Afinamiento')return`${c.long} min a ritmo E, sin bloques rápidos.`;
+  return`${c.long} min continuos a ritmo E${c.cut?' (semana de descarga)':''}. Sal temprano para evitar el calor.`;
+}
+/* ===== Perfil genérico: VDOT base por nivel + factor de edad WMA 2025 (Alan Jones, aprobado USATF MLDR) ===== */
+const WMA={"M":{"dist":[5.0,10.0,15.0,21.0975,25.0,30.0,42.195],"f":{"18":[0.9995,0.9818,0.9835,0.985,0.9808,0.9764,0.968],"19":[1.0,0.9903,0.9929,0.995,0.9918,0.9884,0.982],"20":[1.0,0.9968,0.9985,1.0,0.998,0.9959,0.992],"21":[1.0,1.0,1.0,1.0,0.9995,0.999,0.998],"22":[1.0,1.0,1.0,1.0,1.0,1.0,1.0],"23":[1.0,1.0,1.0,1.0,1.0,1.0,1.0],"24":[1.0,1.0,1.0,1.0,1.0,1.0,1.0],"25":[1.0,1.0,1.0,1.0,1.0,1.0,1.0],"26":[1.0,1.0,1.0,1.0,1.0,1.0,1.0],"27":[1.0,1.0,1.0,1.0,1.0,1.0,1.0],"28":[1.0,1.0,1.0,1.0,1.0,1.0,1.0],"29":[1.0,1.0,1.0,1.0,1.0,1.0,1.0],"30":[0.9999,1.0,1.0,1.0,1.0,1.0,1.0],"31":[0.9988,0.9996,0.9998,1.0,1.0,1.0,1.0],"32":[0.9965,0.9985,0.9991,0.9996,0.9997,0.9998,1.0],"33":[0.993,0.9967,0.9975,0.9982,0.9986,0.9991,1.0],"34":[0.9883,0.9942,0.9952,0.996,0.997,0.998,1.0],"35":[0.9824,0.9909,0.9919,0.9928,0.9946,0.9965,1.0],"36":[0.9755,0.9869,0.9879,0.9888,0.9915,0.9944,0.9999],"37":[0.9685,0.9822,0.9831,0.9839,0.9873,0.991,0.9979],"38":[0.9615,0.9767,0.9775,0.9781,0.9818,0.9859,0.9934],"39":[0.9545,0.9705,0.971,0.9714,0.9751,0.9791,0.9865],"40":[0.9475,0.9636,0.9637,0.9638,0.9674,0.9712,0.9783],"41":[0.9405,0.9561,0.956,0.956,0.9595,0.9632,0.9701],"42":[0.9335,0.9486,0.9484,0.9483,0.9516,0.9552,0.9619],"43":[0.9265,0.9411,0.9408,0.9405,0.9437,0.9472,0.9537],"44":[0.9195,0.9336,0.9331,0.9327,0.9358,0.9392,0.9455],"45":[0.9125,0.9261,0.9254,0.9249,0.9279,0.9312,0.9373],"46":[0.9055,0.9186,0.9178,0.9171,0.92,0.9232,0.9291],"47":[0.8985,0.9111,0.9102,0.9094,0.9122,0.9152,0.9209],"48":[0.8915,0.9036,0.9025,0.9016,0.9043,0.9072,0.9127],"49":[0.8845,0.8961,0.8949,0.8938,0.8964,0.8992,0.9045],"50":[0.8775,0.8886,0.8872,0.886,0.8885,0.8912,0.8963],"51":[0.8705,0.8811,0.8795,0.8782,0.8806,0.8832,0.8881],"52":[0.8635,0.8736,0.8719,0.8705,0.8728,0.8753,0.8799],"53":[0.8565,0.8661,0.8643,0.8627,0.8649,0.8673,0.8717],"54":[0.8495,0.8586,0.8566,0.8549,0.857,0.8593,0.8635],"55":[0.8425,0.8511,0.8489,0.8471,0.8491,0.8513,0.8553],"56":[0.8355,0.8436,0.8413,0.8393,0.8412,0.8433,0.8471],"57":[0.8285,0.8361,0.8337,0.8316,0.8334,0.8353,0.8389],"58":[0.8215,0.8286,0.826,0.8238,0.8255,0.8273,0.8307],"59":[0.8145,0.8211,0.8183,0.816,0.8176,0.8193,0.8225],"60":[0.8075,0.8136,0.8107,0.8082,0.8097,0.8113,0.8143],"61":[0.8005,0.8061,0.803,0.8004,0.8018,0.8033,0.8061],"62":[0.7935,0.7986,0.7954,0.7927,0.794,0.7953,0.7979],"63":[0.7865,0.7911,0.7877,0.7849,0.7861,0.7873,0.7897],"64":[0.7795,0.7836,0.7801,0.7771,0.7782,0.7793,0.7815],"65":[0.7725,0.7761,0.7724,0.7693,0.7703,0.7713,0.7733],"66":[0.7655,0.7686,0.7647,0.7615,0.7624,0.7633,0.7651],"67":[0.7585,0.7611,0.7571,0.7538,0.7546,0.7554,0.7569],"68":[0.7514,0.7536,0.7495,0.746,0.7467,0.7474,0.7487],"69":[0.7436,0.7461,0.7418,0.7382,0.7388,0.7394,0.7405],"70":[0.7353,0.7386,0.7341,0.7304,0.7309,0.7314,0.7323],"71":[0.7264,0.7308,0.7262,0.7223,0.7227,0.7232,0.7241],"72":[0.7169,0.7223,0.7175,0.7135,0.714,0.7145,0.7155],"73":[0.7068,0.7131,0.7082,0.704,0.7046,0.7052,0.7063],"74":[0.696,0.7033,0.6981,0.6938,0.6944,0.6951,0.6963],"75":[0.6847,0.6928,0.6875,0.683,0.6837,0.6844,0.6857],"76":[0.6728,0.6816,0.6761,0.6715,0.6722,0.6729,0.6743],"77":[0.6603,0.6697,0.6641,0.6593,0.66,0.6608,0.6623],"78":[0.6472,0.6572,0.6513,0.6464,0.6472,0.648,0.6495],"79":[0.6334,0.644,0.6379,0.6328,0.6336,0.6345,0.6361],"80":[0.6191,0.6301,0.6238,0.6185,0.6193,0.6202,0.6219],"81":[0.6042,0.6156,0.6091,0.6036,0.6045,0.6054,0.6071],"82":[0.5887,0.6004,0.5937,0.588,0.5889,0.5898,0.5915],"83":[0.5726,0.5845,0.5775,0.5717,0.5726,0.5735,0.5753],"84":[0.5558,0.568,0.5608,0.5547,0.5556,0.5565,0.5583],"85":[0.5385,0.5508,0.5433,0.537,0.5379,0.5389,0.5407]}},"F":{"dist":[5.0,10.0,15.0,21.0975,25.0,30.0,42.195],"f":{"18":[0.9953,0.982,0.9744,0.968,0.9567,0.9445,0.9217],"19":[1.0,0.992,0.9866,0.982,0.9715,0.9602,0.9391],"20":[1.0,0.998,0.9947,0.992,0.983,0.9734,0.9553],"21":[1.0,1.0,0.9989,0.998,0.9909,0.9832,0.9689],"22":[1.0,1.0,1.0,1.0,0.9951,0.9899,0.9801],"23":[1.0,1.0,1.0,1.0,0.9973,0.9943,0.9888],"24":[1.0,1.0,1.0,1.0,0.9988,0.9975,0.995],"25":[1.0,1.0,1.0,1.0,0.9997,0.9994,0.9988],"26":[1.0,1.0,1.0,1.0,1.0,1.0,1.0],"27":[0.9997,1.0,1.0,1.0,1.0,1.0,1.0],"28":[0.999,0.9998,0.9998,0.9998,0.9998,0.9998,0.9998],"29":[0.9977,0.9991,0.9991,0.9991,0.9991,0.9992,0.9992],"30":[0.9959,0.998,0.9979,0.9979,0.998,0.9981,0.9983],"31":[0.9936,0.9964,0.9963,0.9962,0.9964,0.9966,0.997],"32":[0.9908,0.9944,0.9942,0.9941,0.9944,0.9947,0.9953],"33":[0.9875,0.992,0.9917,0.9915,0.9919,0.9924,0.9932],"34":[0.9836,0.9891,0.9887,0.9884,0.989,0.9896,0.9907],"35":[0.9793,0.9857,0.9853,0.9849,0.9856,0.9864,0.9879],"36":[0.9744,0.9819,0.9814,0.9809,0.9818,0.9828,0.9847],"37":[0.9691,0.9777,0.977,0.9764,0.9776,0.9788,0.9811],"38":[0.9632,0.973,0.9721,0.9714,0.9728,0.9743,0.9771],"39":[0.9568,0.9679,0.9669,0.966,0.9676,0.9694,0.9727],"40":[0.9499,0.9623,0.9611,0.9601,0.962,0.9641,0.968],"41":[0.9425,0.9563,0.9549,0.9537,0.956,0.9584,0.9629],"42":[0.9346,0.9499,0.9482,0.9468,0.9494,0.9522,0.9574],"43":[0.9262,0.9429,0.9411,0.9395,0.9424,0.9456,0.9515],"44":[0.9172,0.9356,0.9335,0.9317,0.935,0.9386,0.9453],"45":[0.9078,0.9278,0.9254,0.9234,0.9271,0.9311,0.9386],"46":[0.898,0.9195,0.9169,0.9147,0.9188,0.9233,0.9316],"47":[0.8883,0.9109,0.908,0.9055,0.9101,0.915,0.9242],"48":[0.8786,0.9017,0.8985,0.8958,0.9009,0.9063,0.9165],"49":[0.8689,0.8921,0.8886,0.8856,0.8912,0.8971,0.9083],"50":[0.8592,0.8822,0.8785,0.8753,0.8813,0.8877,0.8998],"51":[0.8495,0.8723,0.8683,0.8649,0.8713,0.8781,0.8909],"52":[0.8398,0.8623,0.8581,0.8546,0.8612,0.8683,0.8816],"53":[0.8301,0.8524,0.8479,0.8442,0.851,0.8583,0.872],"54":[0.8204,0.8425,0.8378,0.8339,0.8408,0.8481,0.8619],"55":[0.8107,0.8325,0.8276,0.8235,0.8304,0.8377,0.8515],"56":[0.8009,0.8226,0.8175,0.8132,0.8199,0.8272,0.8407],"57":[0.7912,0.8126,0.8073,0.8028,0.8094,0.8165,0.8297],"58":[0.7815,0.8027,0.7972,0.7925,0.7989,0.8058,0.8186],"59":[0.7718,0.7928,0.787,0.7821,0.7883,0.7951,0.8076],"60":[0.7621,0.7828,0.7768,0.7718,0.7778,0.7843,0.7965],"61":[0.7524,0.7729,0.7667,0.7614,0.7673,0.7736,0.7854],"62":[0.7427,0.7629,0.7565,0.7511,0.7568,0.7629,0.7744],"63":[0.733,0.753,0.7463,0.7407,0.7462,0.7522,0.7633],"64":[0.7233,0.7431,0.7362,0.7304,0.7358,0.7415,0.7523],"65":[0.7136,0.7331,0.726,0.72,0.7252,0.7308,0.7412],"66":[0.7038,0.7232,0.7159,0.7097,0.7147,0.7201,0.7301],"67":[0.6941,0.7132,0.7057,0.6993,0.7041,0.7094,0.7191],"68":[0.6844,0.7033,0.6955,0.689,0.6937,0.6986,0.708],"69":[0.6747,0.6934,0.6854,0.6786,0.6831,0.6879,0.697],"70":[0.665,0.6834,0.6752,0.6683,0.6726,0.6772,0.6859],"71":[0.6553,0.6735,0.665,0.6579,0.662,0.6665,0.6748],"72":[0.6456,0.6635,0.6549,0.6476,0.6516,0.6558,0.6638],"73":[0.6359,0.6536,0.6447,0.6372,0.641,0.6451,0.6527],"74":[0.6262,0.6437,0.6346,0.6269,0.6304,0.6342,0.6413],"75":[0.6165,0.6337,0.6244,0.6165,0.6196,0.6228,0.629],"76":[0.6067,0.6234,0.6139,0.6059,0.6083,0.611,0.6159],"77":[0.597,0.6123,0.6026,0.5945,0.5964,0.5984,0.6021],"78":[0.5868,0.6005,0.5906,0.5822,0.5835,0.5848,0.5874],"79":[0.5758,0.5879,0.5777,0.5692,0.5699,0.5706,0.572],"80":[0.564,0.5745,0.5641,0.5554,0.5555,0.5556,0.5557],"81":[0.5515,0.5604,0.5497,0.5407,0.5402,0.5396,0.5386],"82":[0.5382,0.5455,0.5345,0.5253,0.5242,0.523,0.5208],"83":[0.5242,0.5299,0.5186,0.5091,0.5074,0.5055,0.5021],"84":[0.5094,0.5135,0.5019,0.4921,0.4898,0.4873,0.4827],"85":[0.4938,0.4963,0.4843,0.4742,0.4713,0.4682,0.4624]}}};
+function ageFactor(age,sex,D){
+  const t=WMA[sex==='F'?'F':'M'];const a=Math.max(18,Math.min(85,Math.round(age)));const row=t.f[a];const ds=t.dist;
+  const d=Math.max(ds[0],Math.min(ds[ds.length-1],D));
+  for(let i=0;i<ds.length-1;i++){if(d<=ds[i+1]){const u=(Math.log(d)-Math.log(ds[i]))/(Math.log(ds[i+1])-Math.log(ds[i]));return row[i]*(1-u)+row[i+1]*u;}}
+  return row[row.length-1];
+}
+// tiempo esperado = tiempo del VDOT base / factor de edad; luego se vuelve a expresar como VDOT
+function genericVdot(base,age,sex,D){const d=Math.max(5,Math.min(42.195,D));const f=ageFactor(age,sex,d);return{vdot:vdotFromRace(d,predictTime(base,d)/f),factor:f};}
 
-        function handleCreateKey(event) {
-            event.preventDefault();
-            const name = document.getElementById('athlete-name').value;
-            const code = document.getElementById('athlete-code').value.toUpperCase();
-            const weight = parseFloat(document.getElementById('athlete-weight').value);
-            const pace = document.getElementById('athlete-pace').value;
-            const level = document.getElementById('athlete-level').value;
+if(typeof module!=='undefined')module.exports={ageFactor,genericVdot,carPos,carTimeAt,minPaceFor,distForPace,vdotFromRace,vdotFromEasy,paceAtPct,predictTime,wflDistForVdot,routeFactor,routeGainPerKm,marginSec,buildPlan,nextMonday};
 
-            const newAthlete = {
-                id: Date.now().toString(),
-                name,
-                code,
-                weight,
-                pace,
-                level,
-                workouts: generateDynamicPlan(level, pace)
-            };
+</script>
+<script>
+/* ============================================================
+   CONFIGURACIÓN DEL CLUB — edita solo este bloque en GitHub
+   ============================================================ */
+const CONFIG={
+  nombreEvento:'',                 // texto opcional junto a "App Run · Medellín" (sin logos)
+  fecha:'2027-05-09',              // AAAA-MM-DD
+  hora:'06:00',                    // hora de largada en Medellín, 24 h
+  fechaConfirmada:false,           // true cuando Red Bull confirme fecha y hora
+  instagram:'',                    // https://instagram.com/...
+  whatsapp:'',                     // +57 300 000 0000 (se usa si falla el envío del formulario)
+  stravaClub:'',                   // https://www.strava.com/clubs/...
+  stravaEvento:'',                 // https://www.strava.com/...
+  inscripcion:'',                  // enlace de inscripción al evento
+  codigoDescuento:'',              // código de Red Bull cuando esté definido
+  vdot:{Principiante:38,Intermedio:45,Avanzado:52}, // perfil del club antes del ajuste por edad
+  rutasExtra:[
+    // Copia los datos desde la página del segmento en Strava. Ejemplo:
+    // {id:'robledo',name:'Mi ruta',sub:'Descripción corta',dist:5.2,gain:40,net:0,loop:true,use:'fondo',race:true,url:'https://www.strava.com/segments/...',note:''}
+    // use: 'series' | 'fondo' | 'suave' | 'cuestas' · loop: true si es circuito · net: altitud final − inicial en m
+  ]
+};
 
-            appState.athletes.push(newAthlete);
-            renderCoachView();
-            showModal('Clave Creada', `Se generó el plan para ${name} con la clave ${code}.`);
-            document.getElementById('form-create-key').reset();
-            generateRandomCode();
-        }
+/* ===== Rutas investigadas (segmentos públicos de Strava, consultados el 2 nov 2026) ===== */
+const BASE_ROUTES=[
+ {id:'aero',name:'Aeroparque Juan Pablo II',sub:'Circuito de 1,5 km · sin semáforos',dist:10.04,gain:145,net:0,loop:true,use:'series',race:true,
+  url:'https://www.strava.com/segments/17422731',src:'Segmento «Aeroparque 10Km»: 10,04 km, +145 m, altitud 1.492–1.506 m. Una vuelta (segmento 5001269): 1,5 km, diferencia 8 m.',
+  note:'Pista renovada en septiembre de 2026 con dos carriles para trote.'},
+ {id:'aeroJ',name:'Aeroparque · vuelta en J',sub:'Circuito de 2 km',dist:1.99,gain:5,net:0,loop:true,use:'fondo',race:true,
+  url:'https://www.strava.com/segments/22389712',src:'Segmento «Nueva Vuelta en J»: 1,99 km, +5 m, altitud 1.475–1.478 m.',note:'La variante más plana encontrada.'},
+ {id:'pdr',name:'Parques del Río → Hatillo',sub:'Corredor norte por la Regional',dist:31.52,gain:225,net:-126,loop:false,use:'fondo',race:true,
+  url:'https://www.strava.com/segments/36410812',src:'Segmento «Parques del Rio - Hatillo»: 31,52 km, +225 m, altitud 1.356–1.511 m, pendiente media −0,4 %.',note:'Se modela como ida y vuelta. Verifica cierres y tráfico a la hora de salida.'},
+ {id:'vegas',name:'Avenida Las Vegas',sub:'Sabaneta → Ciudad del Río',dist:9.91,gain:122,net:-103,loop:false,use:'fondo',race:true,
+  url:'https://www.strava.com/segments/19857536',src:'Segmento «Vegas (Sabaneta - Ciudad del rio)»: 9,91 km, +122 m, altitud 1.485–1.589 m, pendiente media −1 %.',note:'Se modela como ida y vuelta.'},
+ {id:'ciudad',name:'Circuito Ciudad del Río',sub:'Vuelta de 1,3 km',dist:1.34,gain:38,net:0,loop:true,use:'suave',race:true,
+  url:'https://www.strava.com/segments/19721346',src:'Segmento «Circuito Ciudad del Rio»: 1,34 km, +38 m, altitud 1.481–1.498 m.',note:'Ondulado. Mejor para rodajes suaves.'},
+ {id:'nutibara',name:'Cerro Nutibara',sub:'Vuelta de 2,2 km con subida',dist:2.231,gain:75.3,net:0,loop:true,use:'cuestas',race:false,
+  url:'https://www.strava.com/segments/15500706',src:'Segmento «Cerro Nutibara x 10»: 22,31 km, +753 m (≈ 75 m por vuelta), altitud 1.479–1.543 m.',note:'Para cuestas y fuerza.'},
+ {id:'palmas',name:'Vía Las Palmas',sub:'Clínica Medellín → Alto de Las Palmas',dist:14.64,gain:934,net:932,loop:false,use:'cuestas',race:false,
+  url:'https://www.strava.com/segments/19206646',src:'Segmento «Clinica Medellin - Palmas»: 14,64 km, +934 m, altitud 1.554–2.485 m, pendiente media 6,4 %.',note:'Solo fuerza y desnivel, con atención al tráfico.'}
+];
+const USE_LABEL={series:'Series',fondo:'Tirada larga',suave:'Rodaje suave',cuestas:'Cuestas y fuerza'};
+const DEFAULT_CFG={name:'',date:'2027-05-09',time:'06:00',confirmed:'no',ig:'',wa:'',club:'',event:'',code:'',reg:'',vP:38,vI:45,vA:52};
+let CFG={...DEFAULT_CFG};let EXTRA=[];let ROUTES=BASE_ROUTES.slice();
+let DB=null,USER=null,UID=null,IS_ADMIN=false,LAST=null;
 
-        function renderCoachView() {
-            const listEl = document.getElementById('coach-athletes-list');
-            document.getElementById('athletes-count').innerText = `${appState.athletes.length} Atletas`;
+const $=id=>document.getElementById(id);
+const fmtPace=m=>{if(!isFinite(m))return'—';let s=Math.round(m*60);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
+const fmtDur=min=>{let s=Math.round(min*60);const h=Math.floor(s/3600),mm=Math.floor(s%3600/60),ss=s%60;return(h?h+':'+String(mm).padStart(2,'0'):mm)+':'+String(ss).padStart(2,'0');};
+const fmtKm=d=>d.toLocaleString('es-CO',{maximumFractionDigits:1,minimumFractionDigits:1});
+const MONTHS=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const WD=['dom','lun','mar','mié','jue','vie','sáb'];
+const fmtDate=d=>`${WD[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+function parseClock(t){const s=String(t).trim();if(!/^\d{1,2}(:\d{1,2}){1,2}$/.test(s))return NaN;const p=s.split(':').map(Number);if(p.some(x=>x<0)||p.slice(1).some(x=>x>59))return NaN;return p.length===3?p[0]*60+p[1]+p[2]/60:p[0]+p[1]/60;}
+function raceDate(){const[y,m,d]=CFG.date.split('-').map(Number);const[hh,mi]=CFG.time.split(':').map(Number);return new Date(y,m-1,d,hh||0,mi||0);}
+function clockAt(min){const d=new Date(raceDate().getTime()+min*60000);let h=d.getHours(),m=d.getMinutes();const ap=h<12?'a. m.':'p. m.';const h12=h%12||12;return`${h12}:${String(m).padStart(2,'0')} ${ap}`;}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function safeUrl(u){try{const x=new URL(u);return(x.protocol==='https:'||x.protocol==='http:')?x.href:'';}catch(e){return'';}}
 
-            let html = '';
-            appState.athletes.forEach(athlete => {
-                const sim = calculateCatcherCarDistance(athlete.pace);
-                html += `
-                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div>
-                            <h4 class="text-base font-bold text-white">${athlete.name} <span class="text-xs text-orange-400 font-mono">${athlete.code}</span></h4>
-                            <div class="flex gap-3 text-xs text-slate-400 mt-1">
-                                <span>Peso: ${athlete.weight} kg</span>
-                                <span>Ritmo: ${athlete.pace} min/km</span>
-                                <span>Meta CC: <strong class="text-cyan-400">${sim.distance} km</strong></span>
-                            </div>
-                        </div>
-                        <button onclick="loginAsAthleteByCode('${athlete.code}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-3.5 py-2 rounded-xl border border-slate-700">Ver Vista Atleta</button>
-                    </div>
-                `;
-            });
-            listEl.innerHTML = html;
-        }
+function renderHeader(){
+  const rd=raceDate();
+  $('raceWhen').textContent=`${fmtDate(rd)} · ${clockAt(0)}`;
+  const days=Math.ceil((rd-new Date())/864e5);
+  $('raceLeft').textContent=days>0?`Faltan ${days} días`:'';
+  $('datePending').hidden=CFG.confirmed==='si';
+  $('evName').textContent=(CFG.name?CFG.name+' · ':'')+'App Run · Medellín';
+}
+function fillRouteSelect(){
+  const sel=$('raceRoute');const cur=sel.value||'aero';
+  sel.innerHTML=ROUTES.filter(r=>r.race).map(r=>`<option value="${esc(r.id)}">${esc(r.name)}</option>`).join('');
+  sel.value=ROUTES.some(r=>r.id===cur&&r.race)?cur:'aero';
+}
+function readForm(){
+  const v=n=>document.querySelector(`input[name=${n}]:checked`).value;
+  const o={age:+$('age').value,weight:+$('weight').value,sex:v('sex'),level:v('level'),days:+v('days'),paceKind:$('paceKind').value,goal:v('goal'),route:$('raceRoute').value};
+  const errs=[];
+  if(!(o.age>=18&&o.age<=85))errs.push('La edad debe estar entre 18 y 85 años.');
+  if(!(o.weight>=35&&o.weight<=200))errs.push('Revisa el peso (35 a 200 kg).');
+  o.vdot=null;o.vdotSrc='';
+  if(o.paceKind==='race'){const D=+$('rcDist').value,t=parseClock($('rcTime').value);
+    if(!isFinite(t)||t<=0)errs.push('Escribe el tiempo como h:mm:ss, por ejemplo 0:55:00.');
+    else{const p=t/D;if(p<2.8||p>12)errs.push('Ese tiempo da un ritmo fuera de rango. Revísalo.');else{o.vdot=vdotFromRace(D,t);o.vdotSrc=`${D===21.0975?'Media maratón':D===42.195?'Maratón':D+' km'} en ${$('rcTime').value}`;}}}
+  else if(o.paceKind==='easy'){const p=parseClock($('easyPace').value);
+    if(!isFinite(p)||p<3.5||p>12)errs.push('Escribe el ritmo cómodo como min:seg, por ejemplo 6:45.');else{o.vdot=vdotFromEasy(p);o.vdotSrc=`ritmo cómodo de ${$('easyPace').value} min/km (estimado)`;}}
+  if(o.goal==='dist'){o.target=+$('goalDist').value;if(!(o.target>=2&&o.target<=80))errs.push('La distancia objetivo debe estar entre 2 y 80 km.');}
+  else{o.pace=parseClock($('goalPace').value);if(!isFinite(o.pace)||o.pace<2.5||o.pace>15)errs.push('Escribe el ritmo como min:seg, por ejemplo 6:00.');}
+  o.errs=errs;o.generic=!o.vdot;return o;
+}
+function baseVdot(level){const k={Principiante:'vP',Intermedio:'vI',Avanzado:'vA'}[level];const x=+CFG[k];return x>=20&&x<=70?x:DEFAULT_CFG[k];}
+// en modo "ritmo" la distancia depende solo del ritmo elegido; el perfil se ajusta a esa distancia
+function applyGeneric(o,D){if(!o.generic)return;const b=baseVdot(o.level);const g=genericVdot(b,o.age,o.sex,D);o.vdot=g.vdot;o.base=b;o.factor=g.factor;
+  o.vdotSrc=`perfil del club ${o.level.toLowerCase()} (VDOT ${b}) ajustado a ${o.age} años, ${o.sex==='F'?'mujer':'hombre'}: factor de edad ${g.factor.toFixed(3)}`;}
+function compute(){
+  const o=readForm();$('formErr').textContent=o.errs.join(' ');
+  $('raceBox').hidden=o.paceKind!=='race';$('easyBox').hidden=o.paceKind!=='easy';$('noneBox').hidden=o.paceKind!=='none';
+  $('goalDistBox').hidden=o.goal!=='dist';$('goalPaceBox').hidden=o.goal!=='pace';
+  if(o.errs.length)return;
+  const route=ROUTES.find(r=>r.id===o.route)||ROUTES[0];
+  const f=routeFactor(route);
+  let D,pMin;
+  if(o.goal==='dist'){D=o.target;pMin=minPaceFor(D);}else{pMin=o.pace;D=distForPace(pMin);}
+  applyGeneric(o,D);
+  const tCatch=carTimeAt(D)*60; // min desde la largada
+  const margin=marginSec(pMin,f); // s/km
+  const flatEq=pMin/f; // ritmo en plano que equivale al esfuerzo en esa ruta
+  const formD=o.vdot?wflDistForVdot(o.vdot,f):null;
+  const r={o,route,f,D,pMin,tCatch,margin,flatEq,formD};LAST=r;
+  renderObjective(r);renderForm(r);renderStrategy(r);renderZones(r);renderNutrition(r);renderPlan(r);renderRoutes(r);
+}
+function renderObjective(r){
+  const a=r.o.goal==='dist'
+   ?[['key',fmtPace(r.pMin),'min/km mínimo constante',`para llegar a ${fmtKm(r.D)} km`],['',fmtDur(r.tCatch),'h:mm:ss en carrera',`te alcanza a las ${clockAt(r.tCatch)}`]]
+   :[['key',fmtKm(r.D),'km antes del auto',`corriendo a ${fmtPace(r.pMin)} min/km`],['',fmtDur(r.tCatch),'h:mm:ss en carrera',`te alcanza a las ${clockAt(r.tCatch)}`]];
+  $('objStats').innerHTML=a.map(([k,v,u,s])=>`<div class="stat ${k}"><div class="v">${v}</div><div class="u">${u}</div><div class="note">${s}</div></div>`).join('');
+  drawChase(r);
+}
+function drawChase(r){
+  const W=640,H=250,P={l:44,r:14,t:14,b:34};
+  const tMax=Math.max(60,Math.ceil((r.tCatch+12)/15)*15),dMax=Math.ceil(r.D*1.15/5)*5||5;
+  const x=t=>P.l+(t/tMax)*(W-P.l-P.r),y=d=>H-P.b-(d/dMax)*(H-P.t-P.b);
+  let car='';for(let t=0;t<=tMax;t+=1)car+=`${t?'L':'M'}${x(t).toFixed(1)},${y(Math.min(carPos(t/60),dMax)).toFixed(1)}`;
+  const v=1/r.pMin;const run=`M${x(0)},${y(0)}L${x(r.tCatch).toFixed(1)},${y(r.D).toFixed(1)}`;
+  let grid='';const ts=tMax<=120?15:30;for(let t=0;t<=tMax;t+=ts){grid+=`<line x1="${x(t)}" x2="${x(t)}" y1="${P.t}" y2="${H-P.b}" stroke="var(--line)"/><text x="${x(t)}" y="${H-P.b+16}" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="var(--mono)">${t?fmtDur(t).replace(/:00$/,''):'0'}</text>`;}
+  const ds=dMax<=20?5:10;for(let d=0;d<=dMax;d+=ds){grid+=`<line x1="${P.l}" x2="${W-P.r}" y1="${y(d)}" y2="${y(d)}" stroke="var(--line)"/><text x="${P.l-6}" y="${y(d)+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--mono)">${d}</text>`;}
+  $('chaseChart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${grid}
+  <text x="${P.l}" y="${H-4}" font-size="11" fill="var(--muted)">tiempo desde la largada (h:mm) →</text>
+  <text x="${P.l+4}" y="${P.t+10}" font-size="11" fill="var(--muted)">km</text>
+  <path d="${car}" fill="none" stroke="var(--accent)" stroke-width="3"/>
+  <path d="${run}" fill="none" stroke="var(--ink)" stroke-width="2.5" stroke-dasharray="6 4"/>
+  <circle cx="${x(r.tCatch)}" cy="${y(r.D)}" r="6" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"/>
+  <text x="${Math.min(x(r.tCatch)+10,W-150)}" y="${Math.max(y(r.D)-10,P.t+24)}" font-size="12" font-weight="700" fill="var(--ink)">${fmtKm(r.D)} km · ${clockAt(r.tCatch)}</text>
+  <g font-size="12" fill="var(--ink)"><rect x="${W-170}" y="${H-P.b-44}" width="12" height="3" fill="var(--accent)"/><text x="${W-152}" y="${H-P.b-39}">Catcher Car</text>
+  <rect x="${W-170}" y="${H-P.b-24}" width="12" height="3" fill="var(--ink)"/><text x="${W-152}" y="${H-P.b-19}">Tú, a ritmo constante</text></g></svg>`;
+}
+function renderForm(r){
+  const gap=r.formD-r.D;
+  const chip=gap>=1?['ok','Alcanzable']:gap>=-1?['warn','Ajustado']:['bad','Exigente'];
+  $('formStats').innerHTML=`<div class="big">
+   <div class="stat key"><div class="v">${fmtKm(r.formD)}</div><div class="u">km estimados hoy en ${esc(r.route.name)}</div></div>
+   <div class="stat"><div class="v">${r.o.vdot.toFixed(1)}</div><div class="u">VDOT · ${esc(r.o.vdotSrc)}</div></div></div>
+   <p><span class="chip ${chip[0]}">${chip[1]}</span> ${gap>=0?`Con tu forma actual llegarías ${fmtKm(gap)} km más allá de tu objetivo.`:`Te faltan ${fmtKm(-gap)} km de forma para tu objetivo. El plan está diseñado para cerrar esa brecha; los tests de control dirán si vas en camino.`}</p>
+   <p class="note">La estimación combina tu VDOT con la duración de la carrera y el desnivel de la ruta elegida.${r.o.generic?' Como no diste un ritmo propio, es una referencia del perfil del club y no una medición tuya. Si conoces un tiempo reciente de carrera, ingrésalo para afinarla.':''}</p>`;
+}
+function renderStrategy(r){
+  const cruise=r.pMin-Math.max(0,r.margin)/60;
+  r.cruise=cruise;
+  $('cruise').innerHTML=`
+   <div class="stat"><div class="v">${fmtPace(r.pMin)}</div><div class="u">min/km mínimo en plano</div></div>
+   <div class="stat"><div class="v">${r.margin>=0?'+':''}${Math.round(r.margin)}</div><div class="u">s/km de margen por altimetría (${esc(r.route.name)}, ${routeGainPerKm(r.route).toFixed(1)} m de subida por km)</div></div>
+   <div class="stat key"><div class="v">${fmtPace(cruise)}</div><div class="u">min/km ritmo de crucero recomendado</div></div>`;
+  const tips=[
+   `Sal a ${fmtPace(cruise)} min/km desde el primer kilómetro y sostenlo. El auto no te persigue los primeros 30 min, pero el tiempo que ganes acelerando lo pagas al final.`,
+   `Mide por promedio de kilómetro, no por ritmo instantáneo: en subidas cede unos segundos y recupéralos en las bajadas, sin cambiar el esfuerzo.`,
+   `Lleva la app oficial abierta con GPS y batería completa. Haz un ensayo con la app en una tirada larga antes del día de carrera.`,
+   `El auto pasa a 15 km/h a la hora de carrera y a 16 km/h a la hora y media. Si a esos momentos llevas la ventaja de la tabla, vas bien.`
+  ];
+  $('tactics').innerHTML=tips.map((t,i)=>`<li><span>${i+1}</span><div>${esc(t)}</div></li>`).join('');
+  const step=r.D<=12?2:r.D<=30?5:10;let rows='';
+  for(let k=step;k<r.D+1e-9;k+=step){const t=k*cruise;rows+=`<tr><td>km ${k}</td><td class="n">${clockAt(t)}</td><td class="n">${fmtDur(t)}</td><td class="n">${fmtKm(carPos(t/60))} km</td><td class="n">${fmtKm(k-carPos(t/60))} km</td></tr>`;}
+  const tEnd=r.D*cruise;rows+=`<tr><td><b>Meta: ${fmtKm(r.D)} km</b></td><td class="n">${clockAt(tEnd)}</td><td class="n">${fmtDur(tEnd)}</td><td class="n">${fmtKm(carPos(tEnd/60))} km</td><td class="n">${fmtKm(r.D-carPos(tEnd/60))} km</td></tr>`;
+  $('splits').innerHTML=rows;
+}
+function renderZones(r){
+  const v=r.o.vdot;const Z=[
+   ['E','Suave',`${fmtPace(paceAtPct(v,0.65))} – ${fmtPace(paceAtPct(v,0.74))}`,'Rodajes y tiradas largas. Puedes conversar.'],
+   ['Crucero','Ritmo WFL',fmtPace(r.cruise),'Tu ritmo de carrera frente al auto.'],
+   ['T','Umbral',fmtPace(paceAtPct(v,0.88)),'Fuerte pero sostenible unos 20–30 min seguidos.'],
+   ['I','Intervalos',fmtPace(paceAtPct(v,0.975)),'Bloques de 3 a 5 min, cerca del VO₂máx.']];
+  $('zones').innerHTML=`<p class="note">VDOT ${v.toFixed(1)} · ${esc(r.o.vdotSrc)}.</p><div class="tablewrap"><table><thead><tr><th>Zona</th><th>Nombre</th><th class="n">min/km</th><th>Para qué</th></tr></thead><tbody>${Z.map(z=>`<tr><td><b>${z[0]}</b></td><td>${z[1]}</td><td class="n">${z[2]}</td><td>${z[3]}</td></tr>`).join('')}</tbody></table></div>
+  ${r.o.generic?'<p class="note">Los ritmos salen de un perfil, no de tu medición. Si el ritmo suave no te permite conversar, baja la velocidad: manda la sensación, no el reloj.</p>':''}`;
+}
+function renderNutrition(r){
+  const kg=r.o.weight,t=r.tCatch;const rng=(a,b,u)=>`${Math.round(a*kg)}–${Math.round(b*kg)} ${u}`;
+  const during=t<45?'No necesitas carbohidratos durante la carrera: dura menos de 45 min.':t<75?'Bastan pequeñas cantidades: un sorbo de bebida deportiva o enjuagar la boca con ella.':t<=150?`30–60 g de carbohidratos por hora (en ${fmtDur(t)} de carrera, entre ${Math.round(30*t/60)} y ${Math.round(60*t/60)} g en total).`:`Hasta 90 g de carbohidratos por hora (en ${fmtDur(t)} de carrera, hasta ${Math.round(90*t/60)} g en total). Ensaya esa cantidad en las tiradas largas.`;
+  $('nutrition').innerHTML=`<div class="tablewrap"><table><thead><tr><th>Momento</th><th>Para ${kg} kg</th></tr></thead><tbody>
+   <tr><td>Días de entrenamiento moderado (cerca de 1 h)</td><td class="n">${rng(5,7,'g de carbohidratos al día')}</td></tr>
+   <tr><td>Días de descanso o muy suaves</td><td class="n">${rng(3,5,'g de carbohidratos al día')}</td></tr>
+   <tr><td>Antes de la carrera (1 a 4 h antes)</td><td class="n">${rng(1,4,'g de carbohidratos')}</td></tr>
+   <tr><td>Líquido antes (2 a 4 h antes)</td><td class="n">${rng(5,10,'ml')}</td></tr>
+   <tr><td>Durante la carrera</td><td>${during}</td></tr>
+   <tr><td>Límite de pérdida de líquido</td><td class="n">menos de ${(0.02*kg).toFixed(1)} kg (2 % de tu peso)</td></tr></tbody></table></div>
+   <p class="note">Con una salida a las ${clockAt(0)}, el desayuno de 1 a 4 h antes implica levantarse temprano: elige la cantidad más baja si comes más cerca de la largada. Pésate antes y después de una tirada larga para conocer cuánto líquido pierdes. Los consejos de alimentación de Mariana están en su Instagram.</p>`;
+}
+function routeName(id){if(id==='race')return'Tu ruta de carrera';const x=ROUTES.find(r=>r.id===id);return x?x.name:'';}
+function renderPlan(r){
+  const today=new Date();
+  const P=buildPlan({start:today,race:raceDate(),level:r.o.level,days:r.o.days,vdot:r.o.vdot,raceMin:r.tCatch,hasTest:true});
+  r.plan=P;
+  if(!P.W){$('planSum').innerHTML='<p>La fecha de la carrera ya pasó o es demasiado cercana para armar un plan.</p>';$('weeks').innerHTML='';return;}
+  const ph=P.phases;
+  $('planSum').innerHTML=`<p><b>${P.W} semanas</b> desde el ${fmtDate(P.mon)} hasta el día de carrera · ${r.o.days} días por semana · nivel ${esc(r.o.level)}.</p>
+   <p class="note">Fases: base ${ph.base} sem · desarrollo ${ph.build} · específica ${ph.spec} · afinamiento ${ph.taper}. Tirada larga máxima: ${P.longPeak} min. Una semana de descarga cada cuatro.${P.W<8?' Con menos de 8 semanas el plan es corto: prioriza llegar sano.':''}</p>`;
+  const z=s=>s.z==='E'?'E':s.z;
+  $('weeks').innerHTML=P.weeks.map((w,i)=>`<details class="week"${i===0?' open':''}><summary><span class="wk">Sem ${w.w}</span><span class="mono note">${w.date.getDate()} ${MONTHS[w.date.getMonth()]}</span><span class="chip neutral">${w.phase}</span>${w.cut?'<span class="chip warn">Descarga</span>':''}</summary>
+   ${w.sessions.map(s=>`<div class="sess"><div class="d">${s.day}</div><div><b>${esc(s.t)}</b><span class="z">${z(s)}</span>${s.min?` <span class="mono note">${s.min} min</span>`:''}<div class="note">${esc(s.d)}</div><div class="note">Ruta: ${esc(routeName(s.route))}</div></div></div>`).join('')}</details>`).join('');
+}
+function renderRoutes(r){
+  $('routes').innerHTML=ROUTES.map(x=>{const f=routeFactor(x);const m=marginSec(r.cruise||r.pMin,f);const u=safeUrl(x.url);
+   return`<article class="route"><div><h3>${esc(x.name)}</h3><div class="note">${esc(x.sub||'')}</div></div>
+   <div class="tags"><span class="chip neutral">${USE_LABEL[x.use]||esc(x.use)}</span>${x.race?'<span class="chip ok">Apta para carrera</span>':'<span class="chip neutral">Solo entrenamiento</span>'}${x.custom?'<span class="chip warn">Agregada por Mariana</span>':''}</div>
+   <dl class="kv"><dt>Subida</dt><dd>${routeGainPerKm(x).toFixed(1)} m/km</dd><dt>Margen a tu ritmo</dt><dd>${m>=0?'+':''}${Math.round(m)} s/km</dd></dl>
+   ${x.src?`<div class="note">${esc(x.src)}</div>`:''}${x.note?`<div class="note">${esc(x.note)}</div>`:''}
+   ${u?`<a href="${esc(u)}" target="_blank" rel="noopener">Ver en Strava</a>`:''}</article>`;}).join('');
+}
+function renderCommunity(){
+  const links=[['ig','Consejos de Mariana en Instagram'],['club','Únete al club Vibras en Strava'],['event','Únete al evento en Strava'],['reg','Inscríbete al evento']];
+  let h=links.map(([k,l])=>{const u=safeUrl(CFG[k]);return u?`<a class="btn btn-line" href="${esc(u)}" target="_blank" rel="noopener">${l}</a>`:`<span class="btn btn-line" aria-disabled="true" title="Enlace pendiente">${l} <span class="pending">pendiente</span></span>`;}).join('');
+  h+=`<span class="btn btn-line" aria-disabled="true">Conectar mis métricas de Strava <span class="pending">fase 2</span></span>`;
+  if(CFG.code)h+=`<div class="stat key" style="flex-basis:100%"><div class="u">Código de descuento</div><div class="v mono" style="font-size:28px">${esc(CFG.code)}</div></div>`;
+  else h+=`<p class="note" style="flex-basis:100%;margin:0">El código de descuento para la inscripción se publicará aquí cuando Red Bull lo defina.</p>`;
+  $('community').innerHTML=h;
+}
+/* ===== Interesados: Netlify Forms ===== */
+function encodeForm(o){return Object.keys(o).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(o[k]??'')).join('&');}
+async function submitLead(e){
+  e.preventDefault();const msg=$('leadMsg');msg.innerHTML='';
+  const name=$('lName').value.trim(),email=$('lEmail').value.trim(),phone=$('lPhone').value.trim();
+  if(!name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){msg.innerHTML='<div class="toast bad">Escribe tu nombre y un correo válido.</div>';return;}
+  if(!$('lConsent').checked){msg.innerHTML='<div class="toast bad">Para enviar tus datos necesitamos tu autorización de tratamiento de datos.</div>';return;}
+  if(!LAST){msg.innerHTML='<div class="toast bad">Completa primero tus datos y tu objetivo.</div>';return;}
+  const r=LAST;
+  const lead={'form-name':'plan-personalizado','bot-field':$('botField').value,nombre:name,correo:email,whatsapp:phone,
+    sexo:r.o.sex==='F'?'Mujer':'Hombre',edad:r.o.age,peso_kg:r.o.weight,nivel:r.o.level,dias_semana:r.o.days,
+    referencia:r.o.generic?'perfil del club (sin ritmo propio)':r.o.vdotSrc,vdot:r.o.vdot.toFixed(1),
+    objetivo_km:r.D.toFixed(1),ritmo_minimo:fmtPace(r.pMin),ritmo_crucero:fmtPace(r.cruise),ruta:r.route.name,
+    autorizacion:'Sí · Ley 1581 de 2012',fecha:new Date().toISOString()};
+  const summary=`Hola Mariana, quiero el plan personalizado. ${name} · ${email}${phone?' · '+phone:''} · ${lead.sexo} · ${lead.edad} años · ${lead.peso_kg} kg · ${lead.nivel} · ${lead.dias_semana} días/sem · objetivo ${lead.objetivo_km} km a ${lead.ritmo_crucero} min/km en ${lead.ruta}.`;
+  $('leadBtn').disabled=true;
+  try{
+    const res=await fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:encodeForm(lead)});
+    if(!res.ok)throw new Error(res.status);
+    msg.innerHTML='<div class="toast ok">Listo. Mariana recibió tus datos y te contactará.</div>';$('leadForm').reset();
+  }catch(err){msg.innerHTML=fallbackLead(summary,'No pudimos enviar tus datos en este momento.');}
+  finally{$('leadBtn').disabled=false;}
+}
+function fallbackLead(summary,why){
+  const wa=CFG.wa?CFG.wa.replace(/[^\d]/g,''):'';
+  return`<div class="toast bad">${esc(why)} Copia este mensaje y envíaselo a Mariana${CFG.wa?' por WhatsApp al '+esc(CFG.wa):''}.</div>
+  <textarea readonly style="width:100%;min-height:90px;margin-top:8px;padding:8px;border-radius:6px;background:transparent;color:inherit;border:1px solid currentColor" onclick="this.select()">${esc(summary)}</textarea>
+  ${wa?`<p><a class="btn btn-line" style="color:inherit" href="https://wa.me/${wa}?text=${encodeURIComponent(summary)}" target="_blank" rel="noopener">Abrir WhatsApp</a></p>`:''}`;
+}
+function boot(){
+  CFG={...DEFAULT_CFG,name:CONFIG.nombreEvento||'',date:CONFIG.fecha||DEFAULT_CFG.date,time:CONFIG.hora||DEFAULT_CFG.time,
+    confirmed:CONFIG.fechaConfirmada?'si':'no',ig:CONFIG.instagram||'',wa:CONFIG.whatsapp||'',club:CONFIG.stravaClub||'',
+    event:CONFIG.stravaEvento||'',reg:CONFIG.inscripcion||'',code:CONFIG.codigoDescuento||'',
+    vP:CONFIG.vdot?.Principiante??38,vI:CONFIG.vdot?.Intermedio??45,vA:CONFIG.vdot?.Avanzado??52};
+  const extra=(CONFIG.rutasExtra||[]).filter(x=>x&&x.name&&x.dist>0&&x.gain>=0).map((x,i)=>({...x,id:'c_'+(x.id||i),custom:true,net:x.net||0,loop:x.loop!==false}));
+  ROUTES=BASE_ROUTES.concat(extra);
+  renderHeader();fillRouteSelect();renderCommunity();compute();
+}
+$('calc').addEventListener('input',()=>{$('sampleNote').hidden=true;compute();});
+$('calc').addEventListener('change',compute);
+$('calc').addEventListener('submit',e=>e.preventDefault());
+$('leadForm').addEventListener('submit',submitLead);
+boot();
 
-        function handleAthleteLogin(event) {
-            event.preventDefault();
-            const code = document.getElementById('login-code-input').value.trim().toUpperCase();
-            const athlete = appState.athletes.find(a => a.code === code);
-            if (!athlete) {
-                showModal('Clave Incorrecta', 'No se encontró ningún atleta con esta clave.', true);
-                return;
-            }
-            appState.currentAthlete = athlete;
-            renderAthleteDashboard();
-        }
+</script>
 
-        function loginAsAthleteByCode(code) {
-            const athlete = appState.athletes.find(a => a.code === code);
-            if (athlete) {
-                appState.currentAthlete = athlete;
-                switchRole('athlete');
-            }
-        }
-
-        function loadDemoAthlete() {
-            appState.currentAthlete = appState.athletes[0];
-            renderAthleteDashboard();
-        }
-
-        function logoutAthlete() {
-            appState.currentAthlete = null;
-            document.getElementById('athlete-login-card').classList.remove('hidden');
-            document.getElementById('athlete-dashboard').classList.add('hidden');
-        }
-
-        function renderAthleteDashboard() {
-            const athlete = appState.currentAthlete;
-            document.getElementById('athlete-login-card').classList.add('hidden');
-            document.getElementById('athlete-dashboard').classList.remove('hidden');
-            document.getElementById('dash-athlete-title').innerText = `¡Hola, ${athlete.name}!`;
-            document.getElementById('dash-athlete-level').innerText = `Nivel ${athlete.level}`;
-            document.getElementById('metric-weight').innerText = `${athlete.weight} kg`;
-            document.getElementById('metric-pace').innerHTML = `${athlete.pace} <span class="text-xs font-normal text-slate-400">min/km</span>`;
-            
-            const sim = calculateCatcherCarDistance(athlete.pace);
-            document.getElementById('metric-target-km').innerText = `${sim.distance} km`;
-            renderWorkoutsList();
-        }
-
-        function switchAthleteTab(tabName) {
-            ['plan', 'simulator', 'strategy', 'advanced'].forEach(t => {
-                document.getElementById(`athlete-tab-${t}`).classList.add('hidden');
-            });
-            document.getElementById(`athlete-tab-${tabName}`).classList.remove('hidden');
-        }
-
-        function openClubModal() { document.getElementById('club-modal').classList.remove('hidden'); }
-        function closeClubModal() { document.getElementById('club-modal').classList.add('hidden'); }
-
-        function handleClubRegistration(event) {
-            event.preventDefault();
-            const name = document.getElementById('club-reg-name').value;
-            const randomCode = 'MC-' + Math.random().toString(36).substring(2, 6).toUpperCase();
-            const newAthlete = {
-                id: Date.now().toString(),
-                name,
-                code: randomCode,
-                weight: 70,
-                pace: '5:30',
-                level: 'Intermedio',
-                workouts: generateDynamicPlan('Intermedio', '5:30')
-            };
-            appState.athletes.push(newAthlete);
-            appState.currentAthlete = newAthlete;
-            closeClubModal();
-            renderCoachView();
-            switchRole('athlete');
-            showModal('¡Bienvenido!', `Inscripción exitosa. Tu clave personal es: ${randomCode}`);
-        }
-
-        function renderWorkoutsList() {
-            const athlete = appState.currentAthlete;
-            const listEl = document.getElementById('workout-sessions-list');
-            let html = '';
-            athlete.workouts.forEach((w, index) => {
-                html += `
-                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 flex justify-between items-center">
-                        <div>
-                            <h4 class="text-base font-bold text-white">${w.title} (${w.day})</h4>
-                            <p class="text-slate-300 text-sm mt-1">${w.desc}</p>
-                        </div>
-                        <button onclick="toggleWorkoutCompletion(${index})" class="px-4 py-2 rounded-xl text-xs font-semibold ${w.completed ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-300'}">
-                            ${w.completed ? 'Completado' : 'Marcar'}
-                        </button>
-                    </div>
-                `;
-            });
-            listEl.innerHTML = html;
-        }
-
-        function toggleWorkoutCompletion(index) {
-            appState.currentAthlete.workouts[index].completed = !appState.currentAthlete.workouts[index].completed;
-            renderWorkoutsList();
-            const completedCount = appState.currentAthlete.workouts.filter(w => w.completed).length;
-            document.getElementById('metric-completed-workouts').innerText = `${completedCount} / ${appState.currentAthlete.workouts.length}`;
-        }
-
-        function calculateProSimulator() {
-            const pace = document.getElementById('pro-sim-pace').value;
-            const res = calculateCatcherCarDistance(pace);
-            document.getElementById('pro-sim-km').innerText = res.distance + ' km';
-            document.getElementById('pro-sim-time').innerText = `A los ${res.timeFormatted} de carrera`;
-        }
-    </script>
 </body>
 </html>
