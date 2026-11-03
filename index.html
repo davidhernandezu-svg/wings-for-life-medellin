@@ -251,4 +251,394 @@
                 </button>
             </div>
 
-            <!-- Mét
+            <!-- Métricas Top -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+                    <span class="text-xs font-semibold uppercase text-slate-400 block mb-1">Corredor</span>
+                    <h3 id="dash-name" class="text-lg font-bold text-white truncate">Nombre</h3>
+                    <span id="dash-info" class="text-xs text-brand-500 font-mono">Info</span>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+                    <span class="text-xs font-semibold uppercase text-slate-400 block mb-1">Ritmo Plano Base</span>
+                    <div id="dash-pace" class="text-2xl font-black text-white">0:00 <span class="text-xs font-normal text-slate-400">min/km</span></div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl border-l-4 border-l-cyan-500">
+                    <span class="text-xs font-semibold uppercase text-slate-400 block mb-1">Alcance Catcher Car</span>
+                    <div id="dash-catch-km" class="text-2xl font-black text-cyan-400">0.0 km</div>
+                    <span id="dash-catch-time" class="text-xs text-slate-500 font-mono">00:00:00</span>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+                    <span class="text-xs font-semibold uppercase text-slate-400 block mb-1">VDOT Calculado</span>
+                    <div id="dash-vdot" class="text-2xl font-black text-emerald-400">00.0</div>
+                    <span class="text-xs text-slate-500">Motor Fisiológico</span>
+                </div>
+            </div>
+
+            <!-- Pestañas -->
+            <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-4">
+                <button onclick="switchAthleteTab('plan')" id="tab-btn-plan" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition text-slate-400 bg-slate-900 hover:text-white border border-slate-800 cursor-pointer">Plan 8 Semanas</button>
+                <button onclick="switchAthleteTab('sim')" id="tab-btn-sim" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition bg-cyan-600 text-white shadow-md cursor-pointer">Simulador & Gráfico</button>
+                <button onclick="switchAthleteTab('nutri')" id="tab-btn-nutri" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition text-slate-400 bg-slate-900 hover:text-white border border-slate-800 cursor-pointer">Nutrición & Zonas</button>
+                <button onclick="switchView('hook')" class="ml-auto px-4 py-2.5 rounded-xl font-semibold text-xs text-slate-400 hover:text-red-400 transition flex items-center gap-1 cursor-pointer"><i data-lucide="log-out" class="w-4 h-4"></i> Salir</button>
+            </div>
+
+            <!-- Contenido Tabs -->
+            <div id="tab-plan" class="space-y-6 hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+                    <div id="athlete-plan-container"></div>
+                </div>
+            </div>
+
+            <div id="tab-sim" class="space-y-6 block">
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+                    <div class="w-full overflow-x-auto custom-scroll bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <div id="chaseChart" class="min-w-[600px] h-[300px]"></div>
+                    </div>
+                    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-slate-950 p-5 rounded-xl border border-slate-800">
+                            <h4 class="text-sm font-bold text-brand-500 mb-3">Táctica Sugerida</h4>
+                            <ul class="text-sm text-slate-300 space-y-3 list-disc pl-4" id="tactics-list"></ul>
+                        </div>
+                        <div class="bg-slate-950 p-5 rounded-xl border border-slate-800">
+                            <h4 class="text-sm font-bold text-cyan-400 mb-3">Tabla de Paso (Splits)</h4>
+                            <div class="overflow-x-auto custom-scroll">
+                                <table class="w-full text-xs text-left text-slate-300">
+                                    <thead class="text-slate-500 uppercase border-b border-slate-800"><tr><th class="pb-2">KM</th><th class="pb-2">Reloj</th><th class="pb-2">Auto Est.</th></tr></thead>
+                                    <tbody id="splits-table" class="divide-y divide-slate-800 font-mono"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-nutri" class="space-y-6 hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+                        <h3 class="text-lg font-bold text-white mb-4">Combustible e Hidratación</h3>
+                        <div id="nutrition-info" class="space-y-3 text-sm text-slate-300 leading-relaxed"></div>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+                        <h3 class="text-lg font-bold text-white mb-4">Zonas de Ritmo VDOT</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left text-slate-300">
+                                <thead class="text-slate-500 text-xs uppercase border-b border-slate-800"><tr><th class="pb-2">Zona</th><th class="pb-2 text-right">Ritmo (min/km)</th></tr></thead>
+                                <tbody id="zones-table" class="divide-y divide-slate-800 font-mono"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ==================== VISTA 4: ENTRENADOR ==================== -->
+        <div id="view-coach" class="space-y-6 hidden">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+                <h3 class="text-lg font-bold text-white mb-4">Panel Entrenador (Privado)</h3>
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-sm font-bold text-slate-400">Atletas Activos</h3>
+                    <span id="athletes-count" class="text-xs px-3 py-1 bg-slate-800 text-slate-300 rounded-full font-mono">0</span>
+                </div>
+                <div id="coach-athletes-list" class="space-y-3"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        /* ==========================================
+           MOTOR MATEMÁTICO (VDOT + Catcher Car)
+           ========================================== */
+        const CAR = [[0.5,14],[1.0,15],[1.5,16],[2.0,17],[2.5,18],[3.0,22],[3.5,26],[4.0,30],[4.5,34]];
+        function carPos(tH){let d=0;for(let i=0;i<CAR.length;i++){const s=CAR[i][0],v=CAR[i][1],e=i+1<CAR.length?CAR[i+1][0]:1e9;if(tH<=s)break;d+=v*(Math.min(tH,e)-s);}return d;}
+        function carTimeAt(D){let lo=0.5,hi=20;for(let k=0;k<100;k++){const m=(lo+hi)/2;if(carPos(m)<D)lo=m;else hi=m;}return hi;}
+        function distForPace(p){const v=60/p;let lo=0.5,hi=20;for(let k=0;k<100;k++){const m=(lo+hi)/2;if(v*m>carPos(m))lo=m;else hi=m;}return v*hi;}
+        const vo2=v=>-4.60+0.182258*v+0.000104*v*v;
+        function vdotFromEasy(p){return vo2(1000/p)/0.70;}
+        function speedForVO2(x){const a=0.000104,b=0.182258,c=-4.60-x;return(-b+Math.sqrt(b*b-4*a*c))/(2*a);}
+        function paceAtPct(vd,p){return 1000/speedForVO2(vd*p);}
+        const cr=i=>155.4*i**5-30.4*i**4-43.3*i**3+46.3*i**2+19.5*i+3.6;
+        function routeFactor(r){let D=r.dist,G=r.gain,N=r.net||0;if(!r.loop){G=G+(G-N);D=D*2;N=0;}const half=D*1000/2;return((cr(G/half)+cr(-(G-N)/half))/2)/3.6;}
+        function marginSec(p,f){return p*(f-1)*60;}
+        function getWmaFactor(age, sex) {
+            let a = Math.max(18, Math.min(85, age));
+            if(a <= 32) return 1.0;
+            let decay = sex === 'F' ? 0.008 : 0.009;
+            return Math.max(0.4, 1.0 - ((a - 32) * decay)); 
+        }
+
+        const ROUTES = {
+            'aero': { name: 'Aeroparque', dist: 10.04, gain: 145, net: 0, loop: true },
+            'pdr': { name: 'Parques del Río', dist: 31.52, gain: 225, net: -126, loop: false },
+            'vegas': { name: 'Av. Las Vegas', dist: 9.91, gain: 122, net: -103, loop: false }
+        };
+        const LEVEL = { Principiante: {long0: 40}, Intermedio: {long0: 60}, Avanzado: {long0: 80} };
+
+        const fmtPace = m => { let s = Math.round(m*60); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
+        const fmtDur = min => { let s = Math.round(min*60); const h = Math.floor(s/3600), mm = Math.floor(s%3600/60), ss = s%60; return (h?h+':'+String(mm).padStart(2,'0'):mm)+':'+String(ss).padStart(2,'0'); };
+        function parseClock(s) { const p = s.split(':').map(Number); return p.length === 2 ? p[0] + p[1]/60 : 5.5; }
+        function fmtKm(km) { return km.toFixed(1); }
+
+        let appState = { currentView: 'hook', athletes: [], current: null };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if(typeof lucide !== 'undefined') lucide.createIcons();
+            runPublicSim(); 
+        });
+
+        function switchView(view) {
+            appState.currentView = view;
+            const views = ['hook', 'register', 'login', 'dashboard', 'coach'];
+            
+            views.forEach(v => {
+                let el = document.getElementById('view-' + v);
+                if(el) {
+                    el.classList.add('hidden');
+                    el.classList.remove('block');
+                }
+            });
+            
+            let targetEl = document.getElementById('view-' + view);
+            if(targetEl) {
+                targetEl.classList.remove('hidden');
+                targetEl.classList.add('block');
+            }
+
+            const isHook = view === 'hook' || view === 'register' || view === 'login' || view === 'dashboard';
+            let navHook = document.getElementById('nav-hook');
+            let navCoach = document.getElementById('nav-coach');
+            
+            if(navHook && navCoach) {
+                navHook.className = isHook ? 'px-3 py-1.5 rounded-lg text-xs font-bold transition bg-brand-500 text-white cursor-pointer' : 'px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white cursor-pointer';
+                navCoach.className = view === 'coach' ? 'px-3 py-1.5 rounded-lg text-xs font-bold transition bg-brand-500 text-white cursor-pointer' : 'px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white cursor-pointer';
+            }
+
+            if(view === 'coach') renderCoachList();
+        }
+
+        function runPublicSim() {
+            const paceStr = document.getElementById('public-pace').value;
+            const pace = parseClock(paceStr) || 5.5;
+            const dist = distForPace(pace);
+            const time = carTimeAt(dist) * 60;
+            document.getElementById('public-dist').innerText = dist.toFixed(2) + ' km';
+            document.getElementById('public-time').innerText = fmtDur(time/60);
+        }
+
+        function handleSelfRegister(e) {
+            e.preventDefault();
+            const vdotInput = document.getElementById('reg-vdot').value;
+            
+            const a = createAthlete(
+                document.getElementById('reg-name').value,
+                +document.getElementById('reg-age').value,
+                document.getElementById('reg-sex').value,
+                +document.getElementById('reg-weight').value,
+                document.getElementById('reg-pace').value,
+                document.getElementById('reg-days').value,
+                document.getElementById('reg-level').value,
+                document.getElementById('reg-route').value,
+                null, 
+                vdotInput 
+            );
+            
+            appState.current = a;
+            loadAthleteDashboard();
+        }
+
+        function createAthlete(name, age, sex, weight, paceStr, days, level, routeId, codeOverride = null, vdotOverride = null) {
+            const pace = parseClock(paceStr);
+            const route = ROUTES[routeId];
+            
+            let finalVdot = vdotOverride ? parseFloat(vdotOverride) : (vdotFromEasy(pace) / getWmaFactor(age, sex)); 
+
+            const targetDist = distForPace(pace); 
+            const catchTime = carTimeAt(targetDist) * 60;
+            const cruisePace = pace - Math.max(0, marginSec(pace, routeFactor(route)))/60;
+
+            const athlete = {
+                id: Date.now().toString(),
+                code: codeOverride || 'WFL-' + Math.random().toString(36).substring(2,6).toUpperCase(),
+                name, age, sex, weight, paceStr, pace, days, level, route,
+                vdot: finalVdot, catchDist: targetDist, catchTime: catchTime, cruisePace: cruisePace
+            };
+            appState.athletes.push(athlete);
+            return athlete;
+        }
+
+        function renderCoachList() {
+            const list = document.getElementById('coach-athletes-list');
+            const count = document.getElementById('athletes-count');
+            if(list && count) {
+                count.innerText = appState.athletes.length;
+                list.innerHTML = appState.athletes.map(a => `
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex justify-between items-center gap-4">
+                        <div>
+                            <h4 class="font-bold text-white text-sm">${a.name} <span class="text-brand-500 font-mono text-xs ml-2">${a.code}</span></h4>
+                            <div class="flex gap-3 text-xs text-slate-400 mt-1 font-mono">
+                                <span>VDOT: ${a.vdot.toFixed(1)}</span>
+                                <span>Meta: ${a.catchDist.toFixed(1)} km</span>
+                            </div>
+                        </div>
+                    </div>
+                `).reverse().join('');
+            }
+        }
+
+        function handleAthleteLogin(e) {
+            e.preventDefault();
+            const code = document.getElementById('login-code-input').value.trim().toUpperCase();
+            const athlete = appState.athletes.find(a => a.code === code);
+            if (!athlete) return showModal('Error', 'Código incorrecto o no registrado.');
+            appState.current = athlete;
+            loadAthleteDashboard();
+        }
+
+        function loadAthleteDashboard() {
+            const a = appState.current;
+            switchView('dashboard');
+            
+            document.getElementById('lAge').value = a.age;
+            document.getElementById('lSex').value = a.sex;
+            document.getElementById('lWeight').value = a.weight;
+            document.getElementById('lPace').value = a.paceStr;
+            document.getElementById('lDays').value = a.days;
+            document.getElementById('lLevel').value = a.level;
+
+            document.getElementById('dash-name').innerText = a.name;
+            document.getElementById('dash-info').innerText = `${a.age} años | ${a.weight} kg | ${a.level}`;
+            document.getElementById('dash-pace').innerHTML = `${fmtPace(a.pace)} <span class="text-xs text-slate-400">min/km</span>`;
+            document.getElementById('dash-catch-km').innerText = `${a.catchDist.toFixed(2)} km`;
+            document.getElementById('dash-catch-time').innerText = `Tiempo: ${fmtDur(a.catchTime/60)}`;
+            document.getElementById('dash-vdot').innerText = a.vdot.toFixed(1);
+
+            switchAthleteTab('sim'); 
+            renderAthletePlan(a);
+            renderNutritionAndZones(a);
+            setTimeout(() => drawChaseSVG(a), 100); 
+        }
+
+        function switchAthleteTab(tab) {
+            ['plan', 'sim', 'nutri'].forEach(t => {
+                let el = document.getElementById(`tab-${t}`);
+                let btn = document.getElementById(`tab-btn-${t}`);
+                if(el) {
+                    el.classList.add('hidden');
+                    el.classList.remove('block');
+                }
+                if(btn) btn.className = 'px-5 py-2.5 rounded-xl font-semibold text-sm transition text-slate-400 bg-slate-900 hover:text-white border border-slate-800 cursor-pointer';
+            });
+            
+            let targetEl = document.getElementById(`tab-${tab}`);
+            let targetBtn = document.getElementById(`tab-btn-${tab}`);
+            if(targetEl) {
+                targetEl.classList.remove('hidden');
+                targetEl.classList.add('block');
+            }
+            if(targetBtn) targetBtn.className = 'px-5 py-2.5 rounded-xl font-semibold text-sm transition bg-cyan-600 text-white shadow-md cursor-pointer';
+        }
+
+        async function submitLead(e) {
+            e.preventDefault();
+            const btn = document.getElementById('leadBtn');
+            const msg = document.getElementById('leadMsg');
+            btn.disabled = true;
+            msg.innerHTML = '<span class="text-cyan-400 font-semibold">Procesando envío...</span>';
+
+            const a = appState.current;
+            document.getElementById('hdn-vdot').value = a.vdot.toFixed(1);
+            document.getElementById('hdn-obj').value = a.catchDist.toFixed(1);
+            document.getElementById('hdn-ritmo').value = fmtPace(a.cruisePace);
+
+            const form = document.getElementById('leadForm');
+            const formData = new FormData(form);
+
+            try {
+                const res = await fetch('/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(formData).toString()
+                });
+                if (!res.ok) throw new Error('Error en red');
+                msg.innerHTML = '<span class="text-emerald-400 font-bold">¡Solicitud enviada con éxito a Mariana!</span>';
+                setTimeout(() => { closeContactModal(); msg.innerHTML = ''; }, 3000);
+            } catch (error) {
+                msg.innerHTML = '<span class="text-red-400 font-bold">Ocurrió un error. Intenta de nuevo.</span>';
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function showModal(title, msg) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = msg;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+        function closeModal() { document.getElementById('custom-modal').classList.add('hidden'); }
+        function openContactModal() { document.getElementById('contact-modal').classList.remove('hidden'); }
+        function closeContactModal() { document.getElementById('contact-modal').classList.add('hidden'); }
+
+        function renderAthletePlan(a) {
+            const container = document.getElementById('athlete-plan-container');
+            const daysMap = { '3': ['Mar','Jue','Dom'], '4': ['Mar','Jue','Sáb','Dom'], '5': ['Mar','Mié','Vie','Sáb','Dom'] };
+            const myDays = daysMap[a.days] || daysMap['4'];
+            let html = '<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">';
+            for(let w=1; w<=8; w++) {
+                const isRaceWeek = w === 8;
+                const isTaper = w >= 7;
+                const baseLong = LEVEL[a.level].long0;
+                const longRun = Math.round((baseLong + (baseLong * (isTaper ? 0.5 : (w/6)))) / 5) * 5; 
+                
+                html += `<div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition">
+                    <h4 class="font-bold text-white mb-4 border-b border-slate-800 pb-2">Semana ${w} ${isRaceWeek ? '<span class="text-brand-500 text-xs ml-2 uppercase">(Carrera)</span>' : ''}</h4>
+                    <div class="space-y-3">`;
+                
+                myDays.forEach((day, i) => {
+                    let title, desc;
+                    if(isRaceWeek && i === myDays.length -1) { title = "🏁 Carrera"; desc = `Ritmo crucero: ${fmtPace(a.cruisePace)}.`; } 
+                    else if (i === myDays.length -1) { title = "Larga"; desc = `${longRun} min base.`; } 
+                    else if (i === 0) { title = "Aeróbico"; desc = `45 min suave.`; } 
+                    else { title = "Zonas"; desc = `Intervalos.`; }
+                    html += `<div class="flex gap-4 items-start pb-2 border-b border-slate-800/50 last:border-0 last:pb-0">
+                        <div class="w-10 h-8 rounded bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-300 shrink-0 mt-0.5">${day}</div>
+                        <div><strong class="text-white text-sm block">${title}</strong><span class="text-xs text-slate-400 block mt-0.5">${desc}</span></div>
+                    </div>`;
+                });
+                html += `</div></div>`;
+            }
+            container.innerHTML = html + '</div>';
+        }
+
+        function renderNutritionAndZones(a) {
+            document.getElementById('zones-table').innerHTML = `
+                <tr><td class="pt-3 font-semibold">Suave (E)</td><td class="pt-3 font-mono text-right text-slate-300">${fmtPace(paceAtPct(a.vdot,0.70))}</td></tr>
+                <tr><td class="pt-3 font-semibold">Crucero WFL</td><td class="pt-3 font-mono text-right text-cyan-400 font-bold">${fmtPace(a.cruisePace)}</td></tr>
+                <tr><td class="pt-3 font-semibold">Umbral (T)</td><td class="pt-3 font-mono text-right text-brand-500 font-bold">${fmtPace(paceAtPct(a.vdot,0.88))}</td></tr>
+            `;
+        }
+
+        function drawChaseSVG(a) {
+            const chartDiv = document.getElementById('chaseChart');
+            if(!chartDiv) return;
+            
+            const W = 600, H = 250, Pl = 40, Pr = 20, Pt = 20, Pb = 30;
+            const tMax = Math.max(60, Math.ceil((a.catchTime + 10)/15)*15);
+            const dMax = Math.ceil(a.catchDist * 1.2 / 5)*5 || 5;
+            const x = t => Pl + (t/tMax)*(W - Pl - Pr);
+            const y = d => H - Pb - (d/dMax)*(H - Pt - Pb);
+            
+            let carPath = '';
+            for(let t=0; t<=tMax; t++) carPath += `${t?'L':'M'}${x(t).toFixed(1)},${y(Math.min(carPos(t/60), dMax)).toFixed(1)}`;
+            const runPath = `M${x(0)},${y(0)}L${x(a.catchTime).toFixed(1)},${y(a.catchDist).toFixed(1)}`;
+            
+            chartDiv.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="w-full h-full">
+                <path d="${carPath}" fill="none" stroke="#f97316" stroke-width="3"/>
+                <path d="${runPath}" fill="none" stroke="#22d3ee" stroke-width="2.5" stroke-dasharray="5 5"/>
+                <circle cx="${x(a.catchTime)}" cy="${y(a.catchDist)}" r="5" fill="#f97316"/>
+                <text x="${x(a.catchTime)-10}" y="${y(a.catchDist)-15}" font-size="12" fill="#fff" text-anchor="end">¡Alcanzado! ${a.catchDist.toFixed(1)}km</text>
+            </svg>`;
+        }
+    </script>
+</body>
+</html>
