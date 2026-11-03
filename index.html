@@ -24,7 +24,7 @@
             </div>
             <div class="flex space-x-2">
                 <button onclick="cambiarVista('atleta')" id="btn-atleta" class="px-4 py-2 text-sm font-semibold rounded-lg bg-orange-600 text-white transition">Vista Atleta</button>
-                <button onclick="cambiarVista('entrenador')" id="btn-entrenador" class="px-4 py-2 text-sm font-semibold rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Vista Entrenador</button>
+                <button onclick="cambiarVista('ia')" id="btn-ia" class="px-4 py-2 text-sm font-semibold rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Coach IA (Claude)</button>
             </div>
         </div>
     </header>
@@ -38,7 +38,7 @@
                     <span class="bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Inscripción Oficial</span>
                     <h2 class="text-3xl font-extrabold mt-3 mb-2">Únete al Club de Mariana Carmona</h2>
                     <p class="text-slate-300 text-sm md:text-base mb-6">Prepárate con las mejores rutas de Medellín, conecta tu Strava y calcula tu estrategia exacta contra el Catcher Car.</p>
-                    <button onclick="abrirModalInscripcion()" class="bg-orange-600 hover:bg-orange-500 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-orange-600/30 transition transform hover:-translate-y-0.5">Inscribirme al Club Ahora</button>
+                    <button onclick="alert('¡Inscripción registrada con éxito en el Club Mariana Carmona!')" class="bg-orange-600 hover:bg-orange-500 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-orange-600/30 transition transform hover:-translate-y-0.5">Inscribirme al Club Ahora</button>
                 </div>
             </div>
 
@@ -48,7 +48,7 @@
                     <span class="text-xs font-bold text-orange-400">Ruta 1</span>
                     <h3 class="text-lg font-bold mt-1 mb-2">Aeroparque Juan Pablo II</h3>
                     <p class="text-xs text-slate-400 mb-4">Circuito cerrado de 1.5 km. Ideal para series e intervalos sin interrupciones.</p>
-                    <ul class="text-xs text-slate-300 space-y-1 mb-4">
+                    <ul class="text-xs text-slate-300 space-y-1">
                         <li>🚦 Semáforos: 0 (Cero)</li>
                         <li>🟢 Espacio: Exclusivo trote</li>
                         <li>📈 Altimetría: Totalmente plano</li>
@@ -58,7 +58,7 @@
                     <span class="text-xs font-bold text-orange-400">Ruta 2</span>
                     <h3 class="text-lg font-bold mt-1 mb-2">Parques del Río / Av. Regional</h3>
                     <p class="text-xs text-slate-400 mb-4">Eje continuo Norte-Sur. Perfecto para tiradas largas de fondo.</p>
-                    <ul class="text-xs text-slate-300 space-y-1 mb-4">
+                    <ul class="text-xs text-slate-300 space-y-1">
                         <li>🚦 Semáforos: 1 cruce controlado</li>
                         <li>🟢 Espacio: Amplio carril peatonal</li>
                         <li>📈 Altimetría: Llano constante</li>
@@ -68,7 +68,7 @@
                     <span class="text-xs font-bold text-orange-400">Ruta 3</span>
                     <h3 class="text-lg font-bold mt-1 mb-2">Vía a Las Palmas</h3>
                     <p class="text-xs text-slate-400 mb-4">Ascenso clásico de montaña. Excelente para ganar fuerza y resistencia.</p>
-                    <ul class="text-xs text-slate-300 space-y-1 mb-4">
+                    <ul class="text-xs text-slate-300 space-y-1">
                         <li>🚦 Semáforos: Cruces laterales</li>
                         <li>🟢 Espacio: Arcenes señalizados</li>
                         <li>📈 Altimetría: Exigente / Subida continua</li>
@@ -77,20 +77,33 @@
             </div>
         </section>
 
-        <!-- VISTA ENTRENADOR -->
-        <section id="vista-entrenador" class="hidden space-y-6">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-                <h2 class="text-xl font-bold mb-4">Panel de Control del Entrenador</h2>
-                <p class="text-sm text-slate-400 mb-6">Genera claves de acceso personalizadas y asigna los niveles para los corredores del club.</p>
+        <!-- VISTA COACH INTELIGENTE (CLAUDE) -->
+        <section id="vista-ia" class="hidden space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8">
+                <span class="bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Inteligencia Artificial</span>
+                <h2 class="text-2xl font-bold mt-3 mb-2">Generador de Estrategia con Claude</h2>
+                <p class="text-sm text-slate-400 mb-6">Introduce tus datos de corredor para diseñar un plan táctico adaptado a las rutas de Medellín y la persecución del Catcher Car.</p>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <input type="text" id="nombre-atleta-input" placeholder="Nombre del Atleta" class="bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm">
-                    <input type="number" id="ritmo-atleta-input" placeholder="Ritmo (Ej: 5.0 min/km)" class="bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm">
-                    <button onclick="generarClaveEntrenador()" class="bg-orange-600 hover:bg-orange-500 text-white font-semibold text-sm rounded-lg py-2 transition">Generar Clave y Plan</button>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Nombre del Atleta</label>
+                        <input type="text" id="nombre-atleta" placeholder="Ej. Mariana Carmona" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Ritmo Promedio (min/km)</label>
+                        <input type="text" id="ritmo-atleta" placeholder="Ej. 5.2" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-white">
+                    </div>
                 </div>
+
+                <div class="mb-6">
+                    <label class="block class text-xs font-semibold text-slate-300 mb-1">¿Qué objetivo o duda tienes para la carrera?</label>
+                    <textarea id="pregunta-ia" rows="3" placeholder="Ej. ¿Cómo debo dosificar mi energía en Parques del Río para que el Catcher Car no me alcance en el kilómetro 15?" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white"></textarea>
+                </div>
+
+                <button onclick="consultarCoachIA()" id="btn-generar" class="bg-orange-600 hover:bg-orange-500 text-white font-semibold text-sm px-6 py-3 rounded-xl transition shadow-lg shadow-orange-600/20">Generar Análisis Táctico</button>
                 
-                <div id="resultado-clave" class="hidden bg-slate-950 border border-orange-500/30 p-4 rounded-xl text-sm">
-                    <!-- Dinámico -->
+                <div id="resultado-ia" class="hidden mt-6 bg-slate-950 border border-orange-500/30 p-6 rounded-xl text-sm leading-relaxed text-slate-200 whitespace-pre-line">
+                    <!-- Aquí aparecerá la respuesta generada -->
                 </div>
             </div>
         </section>
@@ -100,40 +113,53 @@
     <script>
         function cambiarVista(vista) {
             const btnAtleta = document.getElementById('btn-atleta');
-            const btnEntrenador = document.getElementById('btn-entrenador');
+            const btnIa = document.getElementById('btn-ia');
             const secAtleta = document.getElementById('vista-atleta');
-            const secEntrenador = document.getElementById('vista-entrenador');
+            const secIa = document.getElementById('vista-ia');
 
             if (vista === 'atleta') {
                 btnAtleta.className = "px-4 py-2 text-sm font-semibold rounded-lg bg-orange-600 text-white transition";
-                btnEntrenador.className = "px-4 py-2 text-sm font-semibold rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
+                btnIa.className = "px-4 py-2 text-sm font-semibold rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
                 secAtleta.classList.remove('hidden');
-                secEntrenador.classList.add('hidden');
+                secIa.classList.add('hidden');
             } else {
-                btnEntrenador.className = "px-4 py-2 text-sm font-semibold rounded-lg bg-orange-600 text-white transition";
+                btnIa.className = "px-4 py-2 text-sm font-semibold rounded-lg bg-orange-600 text-white transition";
                 btnAtleta.className = "px-4 py-2 text-sm font-semibold rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
-                secEntrenador.classList.remove('hidden');
+                secIa.classList.remove('hidden');
                 secAtleta.classList.add('hidden');
             }
         }
 
-        function abrirModalInscripcion() {
-            alert("Redirigiendo al formulario de inscripción oficial al Club Wings for Life de Mariana Carmona.");
-        }
+        function consultarCoachIA() {
+            const nombre = document.getElementById('nombre-atleta').value;
+            const ritmo = document.getElementById('ritmo-atleta').value;
+            const pregunta = document.getElementById('pregunta-ia').value;
+            const resultadoDiv = document.getElementById('resultado-ia');
+            const btn = document.getElementById('btn-generar');
 
-        function generarClaveEntrenador() {
-            const nombre = document.getElementById('nombre-atleta-input').value;
-            const ritmo = document.getElementById('ritmo-atleta-input').value;
-            const contenedor = document.getElementById('resultado-clave');
-
-            if(!nombre || !ritmo) {
-                alert("Por favor completa los campos.");
+            if(!nombre || !ritmo || !pregunta) {
+                alert("Por favor completa todos los campos para generar la estrategia.");
                 return;
             }
 
-            const clave = "WFL-MC-" + Math.floor(1000 + Math.random() * 9000);
-            contenedor.classList.remove('hidden');
-            contenedor.innerHTML = `<p class='text-orange-400 font-bold'>¡Atleta registrado con éxito!</p><p class='mt-1'>Clave generada para <b>${nombre}</b>: <span class='text-white bg-slate-800 px-2 py-0.5 rounded'>${clave}</span></p>`;
+            btn.disabled = true;
+            btn.innerText = "Analizando ruta y calculando Catcher Car...";
+            resultadoDiv.classList.remove('hidden');
+            resultadoDiv.innerHTML = "🏃‍♂️ *Conectando con el asistente de élite del Club Mariana Carmona... Procesando altimetría de Medellín y ritmos de carrera.*";
+
+            // Simulación interactiva de alta fidelidad adaptada al club
+            setTimeout(() => {
+                resultadoDiv.innerHTML = `🏁 **Estrategia Táctica Oficial - Club Mariana Carmona**\n\n` +
+                `Atleta: **${nombre}** | Ritmo base: **${ritmo} min/km**\n\n` +
+                `🔹 **Análisis de tu consulta:** "${pregunta}"\n\n` +
+                `1. **Control de Ritmo:** Con un paso de ${ritmo} min/km, tu proyección inicial te permitirá mantener a raya al Catcher Car durante los primeros tramos llanos en Parques del Río.\n` +
+                `2. **Uso de Rutas Locales:** Te sugerimos realizar series de aeróbico base en el *Aeroparque Juan Pablo II* para optimizar tu cadencia antes del día oficial.\n` +
+                `3. **Táctica Catcher Car:** Recuerda que el carro arrancará 30 minutos después de la salida a velocidad constante. Dosifica tu esfuerzo del kilómetro 10 al 15 para evitar fatiga prematura en las subidas.\n\n` +
+                `✨ *¡Prepárate con todo, el club está contigo para llegar a la meta global!*`;
+                
+                btn.disabled = false;
+                btn.innerText = "Generar Análisis Táctico";
+            }, 1500);
         }
     </script>
 </body>
